@@ -1,26 +1,302 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ==========================================================================
+     CYBER PUNCH ROOT PALETTE (Reference Swatch)
+     ========================================================================== */
+  --punch-red: #FF0022;
+  --punch-yellow: #FFD000;
+  --punch-black: #121212;
+  --punch-white: #FFFFFF;
+
+  /* ==========================================================================
+     SURFACE & BACKGROUND SYSTEM (~55-60% Dominant: White Shades)
+     ========================================================================== */
+  --surface-canvas: #F8F9FA;
+  /* Base canvas / page background */
+  --surface-card: #FFFFFF;
+  /* Pure white card & container */
+  --surface-card-subtle: #FAFAFC;
+  /* Nested card / secondary panel */
+  --surface-muted: #F2F4F7;
+  /* Table headers, pill backgrounds, inputs */
+  --surface-elevated: #FFFFFF;
+  /* Popovers, dropdowns, floating modals */
+  --surface-hover: #ECEEF2;
+  /* Interactive row/list hover state */
+
+  /* White & Gray Border Scale */
+  --border-subtle: #EBECEF;
+  /* Subtle hairline divider / card border */
+  --border-default: #DFE2E6;
+  /* Default input & container border */
+  --border-strong: #CDD0D6;
+  /* Emphasized borders */
+
+  /* ==========================================================================
+     STRUCTURAL BLACK SYSTEM (~30% Weight: High Contrast, Typography, Anchors)
+     ========================================================================== */
+  --black-primary: #121212;
+  /* Primary black: headings, key structural blocks */
+  --black-surface: #1A1A1E;
+  /* Elevated dark surface: headers, sidebars, badges */
+  --black-subtle: #2A2A30;
+  /* Dark dividers & borders */
+  --black-hover: #222226;
+  /* Dark element hover state */
+
+  /* Typography / Foreground Colors */
+  --text-primary: #121212;
+  /* Deep black for crisp body and headings */
+  --text-secondary: #484C56;
+  /* Secondary descriptive text */
+  --text-muted: #737887;
+  /* Muted meta labels, timestamps, hints */
+  --text-inverse: #FFFFFF;
+  /* White text on dark structural backgrounds */
+
+  /* ==========================================================================
+     CYBER YELLOW SYSTEM (~10% Weight: Primary High-Impact CTA & Active States)
+     ========================================================================== */
+  --accent-yellow: #FFD000;           /* Cyber yellow primary CTA & action color */
+  --accent-yellow-hover: #E6BC00;     /* Yellow hover state */
+  --accent-yellow-surface: #FFF9D6;   /* Yellow badge & highlighted surface */
+  --accent-yellow-border: #FCE166;    /* Yellow badge border */
+  --text-on-yellow: #121212;          /* High contrast dark text on yellow CTA */
+
+  /* Dedicated CTA Tokens */
+  --cta-bg: var(--accent-yellow);
+  --cta-bg-hover: var(--accent-yellow-hover);
+  --cta-text: var(--text-on-yellow);
+
+  /* ==========================================================================
+     EMIL KOWALSKI CRAFT & EASING TOKENS
+     ========================================================================== */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);       /* Strong punchy ease-out for responsive UI */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);   /* Natural on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);    /* iOS-like drawer / sheet curve */
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);    /* Smooth settling spring */
+
+  /* ==========================================================================
+     CYBER RED SYSTEM (~5% Weight: Urgent Alerts, Critical Stockout & Punches)
+     ========================================================================== */
+  --accent-red: #FF0022;              /* Cyber red urgent focal & alert accent */
+  --accent-red-hover: #D9001D;        /* Red hover state */
+  --accent-red-surface: #FFE8EB;      /* Red alert badge & soft pill surface */
+  --accent-red-border: #FFA8B3;       /* Red alert border */
+  --text-on-red: #FFFFFF;             /* White text on red elements */
+
+  /* Semantic Core Defaults */
+  --background: var(--surface-canvas);
+  --foreground: var(--text-primary);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-primary);
+  --border: var(--border-subtle);
+}
+
+/* ==========================================================================
+   DARK MODE OVERRIDE (For Light/Dark/Device setting toggle)
+   ========================================================================== */
+html[data-theme="dark"],
+.dark {
+  --surface-canvas: #121214;          /* Deep dark canvas background */
+  --surface-card: #18181B;            /* Elevated card background */
+  --surface-card-subtle: #202024;     /* Secondary container / grouped row */
+  --surface-muted: #27272A;           /* Input background, pill backgrounds */
+  --surface-elevated: #222226;        /* Modals and popovers */
+  --surface-hover: #2A2A30;           /* List/row hover state */
+
+  --border-subtle: #27272A;           /* Subtle dark hairline divider */
+  --border-default: #333338;          /* Standard dark input border */
+  --border-strong: #4B4B54;           /* Emphasized dark borders */
+
+  --black-primary: #FFFFFF;           /* Headings become crisp white in dark mode */
+  --black-surface: #121214;
+  --black-subtle: #27272A;
+  --black-hover: #1E1E22;
+
+  --text-primary: #F4F4F6;            /* Primary light text */
+  --text-secondary: #A1A1AA;          /* Secondary descriptive text */
+  --text-muted: #71717A;              /* Muted text */
+  --text-inverse: #121214;            /* Inverted text */
+
+  --background: var(--surface-canvas);
+  --foreground: var(--text-primary);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-primary);
+  --border: var(--border-subtle);
 }
 
 @theme inline {
+  /* Cyber Punch Exact Colors */
+  --color-punch-red: var(--punch-red);
+  --color-punch-yellow: var(--punch-yellow);
+  --color-punch-black: var(--punch-black);
+  --color-punch-white: var(--punch-white);
+
+  /* White & Surface Shades (~55-60%) */
+  --color-surface-canvas: var(--surface-canvas);
+  --color-surface-card: var(--surface-card);
+  --color-surface-card-subtle: var(--surface-card-subtle);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-hover: var(--surface-hover);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  /* Black Structural (~30%) */
+  --color-black-primary: var(--black-primary);
+  --color-black-surface: var(--black-surface);
+  --color-black-subtle: var(--black-subtle);
+  --color-black-hover: var(--black-hover);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Yellow Accent (~10%) */
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-yellow-hover: var(--accent-yellow-hover);
+  --color-accent-yellow-surface: var(--accent-yellow-surface);
+  --color-accent-yellow-border: var(--accent-yellow-border);
+  --color-text-on-yellow: var(--text-on-yellow);
+
+  /* Red Accent (~5%) */
+  --color-accent-red: var(--accent-red);
+  --color-accent-red-hover: var(--accent-red-hover);
+  --color-accent-red-surface: var(--accent-red-surface);
+  --color-accent-red-border: var(--accent-red-border);
+  --color-text-on-red: var(--text-on-red);
+
+  /* Standard Base Theme */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Selection & Focus Ring */
+::selection {
+  background-color: var(--accent-yellow);
+  color: var(--text-primary);
+}
+
+:focus-visible {
+  outline: none;
+}
+
+/* ==========================================================================
+   APPLE DESIGN & NEON CYBER PUNCH EFFECTS
+   ========================================================================== */
+
+/* Apple Translucent Glass Materials */
+.apple-sidebar-glass {
+  background: rgba(18, 18, 18, 0.92);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 1px 0 0 0 rgba(255, 255, 255, 0.04), 8px 0 32px rgba(0, 0, 0, 0.35);
+}
+
+.apple-card-glass {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+}
+
+/* Apple Instant Response Press for discrete standalone buttons */
+.apple-press {
+  transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out), opacity 140ms var(--ease-out);
+  will-change: transform;
+}
+
+.apple-press:active {
+  transform: scale(0.97);
+}
+
+/* Sidebar Nav Item: Zero gap, zero shrink, zero outline on click */
+.sidebar-nav-item {
+  outline: none !important;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+}
+
+.sidebar-nav-item:focus,
+.sidebar-nav-item:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep sidebar items 100% stable without shrinking or creating gaps */
+.sidebar-nav-item:active {
+  transform: none !important;
+  opacity: 0.9;
+}
+
+/* Subtle & Refined Neon Glow for Selected Menu */
+.neon-selected-glow {
+  background: linear-gradient(90deg, rgba(255, 208, 0, 0.03) 0%, rgba(255, 208, 0, 0.07) 60%, rgba(255, 208, 0, 0.22) 100%) !important;
+  border: 1px solid rgba(255, 208, 0, 0.18) !important;
+  box-shadow: 0 0 16px -2px rgba(255, 208, 0, 0.18), inset 0 1px 0 0 rgba(255, 255, 255, 0.06) !important;
+  outline: none !important;
+}
+
+.neon-selected-glow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 25%;
+  height: 50%;
+  width: 2.5px;
+  background: rgba(255, 208, 0, 0.85);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px 1px rgba(255, 208, 0, 0.35);
+}
+
+/* Neon Pro CTA Button */
+.neon-pro-cta {
+  background: linear-gradient(135deg, #FFD000 0%, #FFC000 60%, #E6AC00 100%);
+  color: #121212;
+  box-shadow: 0 0 24px -2px rgba(255, 208, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), filter 160ms var(--ease-out);
+  will-change: transform, box-shadow;
+}
+
+/* Touch-gated hover state (prevents sticky mobile hover) */
+@media (hover: hover) and (pointer: fine) {
+  .neon-pro-cta:hover {
+    background: linear-gradient(135deg, #FFE14D 0%, #FFD000 100%);
+    box-shadow: 0 0 30px 2px rgba(255, 208, 0, 0.75), 0 6px 18px rgba(0, 0, 0, 0.4);
+    transform: translateY(-0.5px);
+  }
+}
+
+/* 5% Punch Red Notification Badge */
+.neon-alert-dot {
+  background-color: var(--accent-red);
+  box-shadow: 0 0 10px 1px rgba(255, 0, 34, 0.75);
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+  .apple-press,
+  .sliding-neon-indicator,
+  .neon-pro-cta {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }

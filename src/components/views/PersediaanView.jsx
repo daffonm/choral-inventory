@@ -11,6 +11,12 @@ import {
   Button,
   Badge,
   SegmentedControl,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -31,7 +37,7 @@ export default function PersediaanView({ lang: propLang }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -82,58 +88,56 @@ export default function PersediaanView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">Real-time Stock</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">SKU</th>
-                    <th className="p-3">Nama Produk</th>
-                    <th className="p-3">Lokasi Gudang</th>
-                    <th className="p-3 text-right">Total Stock</th>
-                    <th className="p-3 text-right">Available Stock</th>
-                    <th className="p-3 text-right">Reserved Stock</th>
-                    <th className="p-3 text-right">Damaged Stock</th>
-                    <th className="p-3 text-right">Status Kesehatan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {stokSaatIni.map((item) => (
-                    <tr key={item.sku} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.sku}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.namaProduk}
-                      </td>
-                      <td className="p-3 text-text-secondary font-mono text-[11px]">
-                        {item.lokasiGudang}
-                      </td>
-                      <td className="p-3 text-right font-mono font-bold text-black-primary">
-                        {formatNumber(item.totalStock)}
-                      </td>
-                      <td className="p-3 text-right font-mono font-bold text-accent-yellow-hover">
-                        {formatNumber(item.availableStock)}
-                      </td>
-                      <td className="p-3 text-right font-mono text-text-secondary">
-                        {formatNumber(item.reservedStock)}
-                      </td>
-                      <td className="p-3 text-right font-mono text-accent-red font-semibold">
-                        {formatNumber(item.damagedStock)}
-                      </td>
-                      <td className="p-3 text-right">
-                        <Badge
-                          variant={item.statusKesehatan.includes("Kritis") ? "red" : "yellow"}
-                          dot
-                          size="sm"
-                        >
-                          {item.statusKesehatan}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Nama Produk</TableHead>
+                  <TableHead>Lokasi Gudang</TableHead>
+                  <TableHead className="text-right">Total Stock</TableHead>
+                  <TableHead className="text-right">Available Stock</TableHead>
+                  <TableHead className="text-right">Reserved Stock</TableHead>
+                  <TableHead className="text-right">Damaged Stock</TableHead>
+                  <TableHead className="text-right">Status Kesehatan</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stokSaatIni.map((item) => (
+                  <TableRow key={item.sku}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.sku}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.namaProduk}
+                    </TableCell>
+                    <TableCell className="text-text-secondary font-mono text-[11px]">
+                      {item.lokasiGudang}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold text-black-primary">
+                      {formatNumber(item.totalStock)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold text-accent-yellow-hover">
+                      {formatNumber(item.availableStock)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-text-secondary">
+                      {formatNumber(item.reservedStock)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-accent-red font-semibold">
+                      {formatNumber(item.damagedStock)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={item.statusKesehatan.includes("Kritis") ? "red" : "yellow"}
+                        dot
+                        size="sm"
+                      >
+                        {item.statusKesehatan}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -153,61 +157,59 @@ export default function PersediaanView({ lang: propLang }) {
             <Badge variant="neutral">Immutable Log</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Movement ID</th>
-                    <th className="p-3">Transaction Type</th>
-                    <th className="p-3">SKU</th>
-                    <th className="p-3">Quantity</th>
-                    <th className="p-3">Source / Asal</th>
-                    <th className="p-3">Reason / Keterangan</th>
-                    <th className="p-3">Petugas (User)</th>
-                    <th className="p-3">Timestamp</th>
-                    <th className="p-3">Ref. Trx</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {pergerakanStok.map((item) => (
-                    <tr key={item.movementId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.movementId}
-                      </td>
-                      <td className="p-3">
-                        <Badge
-                          variant={
-                            item.transactionType.includes("Incoming")
-                              ? "yellow"
-                              : item.transactionType.includes("Damaged")
-                              ? "red"
-                              : "neutral"
-                          }
-                          size="sm"
-                        >
-                          {item.transactionType}
-                        </Badge>
-                      </td>
-                      <td className="p-3 font-mono font-semibold text-black-primary">
-                        {item.sku}
-                      </td>
-                      <td className="p-3 font-mono font-bold">
-                        <span className={item.quantity > 0 ? "text-accent-yellow-hover" : "text-black-primary"}>
-                          {item.quantity > 0 ? `+${item.quantity}` : item.quantity} pcs
-                        </span>
-                      </td>
-                      <td className="p-3 text-text-secondary">{item.source}</td>
-                      <td className="p-3 text-text-primary max-w-xs">{item.reason}</td>
-                      <td className="p-3 font-mono text-[11px] text-text-muted">{item.user}</td>
-                      <td className="p-3 font-mono text-[11px] text-text-secondary">{item.timestamp}</td>
-                      <td className="p-3 font-mono text-[11px] font-bold text-accent-yellow-hover">
-                        {item.referenceTransaction}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Movement ID</TableHead>
+                  <TableHead>Transaction Type</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Source / Asal</TableHead>
+                  <TableHead>Reason / Keterangan</TableHead>
+                  <TableHead>Petugas (User)</TableHead>
+                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Ref. Trx</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pergerakanStok.map((item) => (
+                  <TableRow key={item.movementId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.movementId}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          item.transactionType.includes("Incoming")
+                            ? "yellow"
+                            : item.transactionType.includes("Damaged")
+                            ? "red"
+                            : "neutral"
+                        }
+                        size="sm"
+                      >
+                        {item.transactionType}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono font-semibold text-black-primary">
+                      {item.sku}
+                    </TableCell>
+                    <TableCell className="font-mono font-bold">
+                      <span className={item.quantity > 0 ? "text-accent-yellow-hover" : "text-black-primary"}>
+                        {item.quantity > 0 ? `+${item.quantity}` : item.quantity} pcs
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-text-secondary">{item.source}</TableCell>
+                    <TableCell className="text-text-primary max-w-xs">{item.reason}</TableCell>
+                    <TableCell className="font-mono text-[11px] text-text-muted">{item.user}</TableCell>
+                    <TableCell className="font-mono text-[11px] text-text-secondary">{item.timestamp}</TableCell>
+                    <TableCell className="font-mono text-[11px] font-bold text-accent-yellow-hover">
+                      {item.referenceTransaction}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -227,38 +229,36 @@ export default function PersediaanView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">Channel Lock Pool</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Produk</th>
-                    <th className="p-3">Channel Distribusi</th>
-                    <th className="p-3">Quantity Alokasi</th>
-                    <th className="p-3">Persentase Pool</th>
-                    <th className="p-3 text-right">Status Sinkronisasi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {alokasiStok.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.produk}
-                      </td>
-                      <td className="p-3 font-bold text-black-primary">
-                        {item.channel}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.quantity} pcs
-                      </td>
-                      <td className="p-3 font-mono text-text-secondary">{item.persentase}</td>
-                      <td className="p-3 text-right">
-                        <Badge variant="yellow" dot size="sm">{item.statusSync}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>Channel Distribusi</TableHead>
+                  <TableHead>Quantity Alokasi</TableHead>
+                  <TableHead>Persentase Pool</TableHead>
+                  <TableHead className="text-right">Status Sinkronisasi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {alokasiStok.map((item, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.produk}
+                    </TableCell>
+                    <TableCell className="font-bold text-black-primary">
+                      {item.channel}
+                    </TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.quantity} pcs
+                    </TableCell>
+                    <TableCell className="font-mono text-text-secondary">{item.persentase}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="yellow" dot size="sm">{item.statusSync}</Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -278,55 +278,53 @@ export default function PersediaanView({ lang: propLang }) {
             <Badge variant="neutral">Audit Triwulan</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">SKU</th>
-                    <th className="p-3">Nama Produk</th>
-                    <th className="p-3 text-right">System Stock</th>
-                    <th className="p-3 text-right">Physical Stock</th>
-                    <th className="p-3 text-right">Difference (Selisih)</th>
-                    <th className="p-3">Penyesuaian / Adjustment</th>
-                    <th className="p-3">Auditor</th>
-                    <th className="p-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {stockOpname.map((item) => (
-                    <tr key={item.sku} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.sku}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.namaProduk}
-                      </td>
-                      <td className="p-3 text-right font-mono text-text-secondary">
-                        {item.systemStock} pcs
-                      </td>
-                      <td className="p-3 text-right font-mono font-bold text-black-primary">
-                        {item.physicalStock} pcs
-                      </td>
-                      <td className="p-3 text-right font-mono font-bold">
-                        <span className={item.difference < 0 ? "text-accent-red" : item.difference > 0 ? "text-accent-yellow-hover" : "text-text-muted"}>
-                          {item.difference > 0 ? `+${item.difference}` : item.difference} pcs
-                        </span>
-                      </td>
-                      <td className="p-3 text-text-secondary max-w-xs">{item.adjustment}</td>
-                      <td className="p-3 font-mono text-[11px] text-text-muted">{item.auditor}</td>
-                      <td className="p-3 text-right">
-                        <Badge
-                          variant={item.difference === 0 ? "yellow" : "neutral"}
-                          size="sm"
-                        >
-                          {item.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Nama Produk</TableHead>
+                  <TableHead className="text-right">System Stock</TableHead>
+                  <TableHead className="text-right">Physical Stock</TableHead>
+                  <TableHead className="text-right">Difference (Selisih)</TableHead>
+                  <TableHead>Penyesuaian / Adjustment</TableHead>
+                  <TableHead>Auditor</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stockOpname.map((item) => (
+                  <TableRow key={item.sku}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.sku}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.namaProduk}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-text-secondary">
+                      {item.systemStock} pcs
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold text-black-primary">
+                      {item.physicalStock} pcs
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      <span className={item.difference < 0 ? "text-accent-red" : item.difference > 0 ? "text-accent-yellow-hover" : "text-text-muted"}>
+                        {item.difference > 0 ? `+${item.difference}` : item.difference} pcs
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-text-secondary max-w-xs">{item.adjustment}</TableCell>
+                    <TableCell className="font-mono text-[11px] text-text-muted">{item.auditor}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={item.difference === 0 ? "yellow" : "neutral"}
+                        size="sm"
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -346,50 +344,48 @@ export default function PersediaanView({ lang: propLang }) {
             <Badge variant="red" dot size="sm">Safety Buffer Gate</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">SKU / Kode</th>
-                    <th className="p-3">Nama Item</th>
-                    <th className="p-3 text-right">Current Stock</th>
-                    <th className="p-3 text-right">Minimum Stock Buffer</th>
-                    <th className="p-3">Rekomendasi Tindakan Reorder</th>
-                    <th className="p-3 text-right">Status Buffer</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {stokMinimum.map((item) => (
-                    <tr key={item.sku} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.sku}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.namaProduk}
-                      </td>
-                      <td className="p-3 text-right font-mono font-bold">
-                        <span className={item.currentStock < item.minimumStock ? "text-accent-red font-black" : "text-black-primary"}>
-                          {item.currentStock}
-                        </span>
-                      </td>
-                      <td className="p-3 text-right font-mono text-text-secondary">
-                        {item.minimumStock}
-                      </td>
-                      <td className="p-3 text-text-secondary">{item.reorderPoint}</td>
-                      <td className="p-3 text-right">
-                        <Badge
-                          variant={item.priority === "high" ? "red" : item.priority === "warning" ? "yellow" : "neutral"}
-                          dot={item.priority === "high"}
-                          size="sm"
-                        >
-                          {item.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU / Kode</TableHead>
+                  <TableHead>Nama Item</TableHead>
+                  <TableHead className="text-right">Current Stock</TableHead>
+                  <TableHead className="text-right">Minimum Stock Buffer</TableHead>
+                  <TableHead>Rekomendasi Tindakan Reorder</TableHead>
+                  <TableHead className="text-right">Status Buffer</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stokMinimum.map((item) => (
+                  <TableRow key={item.sku}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.sku}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.namaProduk}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      <span className={item.currentStock < item.minimumStock ? "text-accent-red font-black" : "text-black-primary"}>
+                        {item.currentStock}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-text-secondary">
+                      {item.minimumStock}
+                    </TableCell>
+                    <TableCell className="text-text-secondary">{item.reorderPoint}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={item.priority === "high" ? "red" : item.priority === "warning" ? "yellow" : "neutral"}
+                        dot={item.priority === "high"}
+                        size="sm"
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

@@ -25,7 +25,7 @@ export default function DashboardView({ lang: propLang }) {
   const maxVal = Math.max(...pergerakanStokChart.map((d) => Math.max(d.incoming, d.outgoing)));
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* 1. Header & Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -63,8 +63,8 @@ export default function DashboardView({ lang: propLang }) {
               <span className="text-xs font-semibold text-text-secondary">
                 {lang === "id" ? "Total Produk Aktif" : "Total Active Products"}
               </span>
-              <span className="w-8 h-8 rounded-lg bg-surface-muted flex items-center justify-center text-black-primary border border-border-subtle">
-                <Icons.ProductBag className="w-4 h-4 text-black-primary" />
+              <span className="size-8 rounded-lg bg-surface-muted flex items-center justify-center text-black-primary border border-border-subtle">
+                <Icons.ProductBag className="size-4 text-black-primary" />
               </span>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
@@ -87,8 +87,8 @@ export default function DashboardView({ lang: propLang }) {
               <span className="text-xs font-semibold text-text-secondary">
                 {lang === "id" ? "Total Material & Bahan" : "Total Raw Materials"}
               </span>
-              <span className="w-8 h-8 rounded-lg bg-surface-muted flex items-center justify-center text-black-primary border border-border-subtle">
-                <Icons.MaterialFabric className="w-4 h-4 text-black-primary" />
+              <span className="size-8 rounded-lg bg-surface-muted flex items-center justify-center text-black-primary border border-border-subtle">
+                <Icons.MaterialFabric className="size-4 text-black-primary" />
               </span>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
@@ -111,8 +111,8 @@ export default function DashboardView({ lang: propLang }) {
               <span className="text-xs font-semibold text-text-secondary">
                 {lang === "id" ? "Total Stok Fisik" : "Total Physical Stock"}
               </span>
-              <span className="w-8 h-8 rounded-lg bg-accent-yellow-surface flex items-center justify-center text-black-primary border border-accent-yellow-border">
-                <Icons.Package className="w-4 h-4 text-black-primary" />
+              <span className="size-8 rounded-lg bg-accent-yellow-surface flex items-center justify-center text-black-primary border border-accent-yellow-border">
+                <Icons.Package className="size-4 text-black-primary" />
               </span>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
@@ -170,7 +170,7 @@ export default function DashboardView({ lang: propLang }) {
             <div className="p-4 rounded-xl bg-surface-muted/60 border border-border-subtle flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-black-primary flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-accent-yellow inline-block" />
+                  <span className="size-2.5 rounded-full bg-accent-yellow inline-block" />
                   Available Stock
                 </span>
                 <Badge variant="yellow" size="sm">Siap Jual</Badge>
@@ -190,7 +190,7 @@ export default function DashboardView({ lang: propLang }) {
             <div className="p-4 rounded-xl bg-surface-muted/60 border border-border-subtle flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-black-primary flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-punch-black inline-block" />
+                  <span className="size-2.5 rounded-full bg-punch-black inline-block" />
                   Reserved Stock
                 </span>
                 <Badge variant="dark" size="sm">Terkunci</Badge>
@@ -210,7 +210,7 @@ export default function DashboardView({ lang: propLang }) {
             <div className="p-4 rounded-xl bg-accent-red-surface/30 border border-accent-red-border/50 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-accent-red flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-accent-red inline-block" />
+                  <span className="size-2.5 rounded-full bg-accent-red inline-block" />
                   Damaged Stock
                 </span>
                 <Badge variant="red" size="sm" dot>Karantina</Badge>
@@ -311,14 +311,14 @@ export default function DashboardView({ lang: propLang }) {
           </CardHeader>
           <CardContent>
             {/* Visual Bar Chart comparing In vs Out */}
-            <div className="space-y-4 pt-2">
+            <div className="flex flex-col gap-4 pt-2">
               <div className="flex items-center justify-end gap-4 text-xs font-semibold">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-accent-yellow border border-accent-yellow-border inline-block" />
+                  <span className="size-3 rounded-xs bg-accent-yellow border border-accent-yellow-border inline-block" />
                   Barang Masuk (Incoming)
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-punch-black inline-block" />
+                  <span className="size-3 rounded-xs bg-punch-black inline-block" />
                   Barang Keluar (Outgoing)
                 </span>
               </div>

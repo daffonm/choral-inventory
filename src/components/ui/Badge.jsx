@@ -1,55 +1,79 @@
 "use client";
 
-import React from "react";
+import React, { forwardRef } from "react";
+import { cva } from "class-variance-authority";
+import { cn } from "../../lib/utils";
 
 /**
- * Reusable Badge component matching the Cyber Punch design system palette.
- * - Yellow: 10% secondary accent (Status, active, highlights)
- * - Red: 5% punch accent (Alerts, urgent changes, stockouts)
- * - Neutral: White shade surface
+ * Badge Variants conforming to shadcn CVA architecture & Cyber Punch palette.
+ * - data-slot="badge" for styling hooks.
+ * - Dot indicator uses size-1.5 standard.
  */
-export function Badge({
-  variant = "neutral",
-  size = "md",
-  className = "",
-  dot = false,
-  children,
-  ...props
-}) {
-  const variants = {
-    yellow:
-      "bg-accent-yellow-surface text-text-on-yellow border-accent-yellow-border font-bold",
-    red:
-      "bg-accent-red-surface text-accent-red border-accent-red-border font-bold",
-    neutral:
-      "bg-surface-muted text-text-secondary border-border-subtle font-semibold",
-    dark:
-      "bg-punch-black text-white border-black-subtle font-medium",
-  };
+export const badgeVariants = cva(
+  "inline-flex items-center border tracking-tight transition-[background-color,border-color,color] duration-150 ease-out",
+  {
+    variants: {
+      variant: {
+        yellow:
+          "bg-accent-yellow-surface text-text-on-yellow border-accent-yellow-border font-bold",
+        red:
+          "bg-accent-red-surface text-accent-red border-accent-red-border font-bold",
+        neutral:
+          "bg-surface-muted text-text-secondary border-border-subtle font-semibold",
+        dark:
+          "bg-punch-black text-white border-black-subtle font-medium",
+        outline:
+          "bg-transparent text-text-primary border-border-default",
+      },
+      size: {
+        sm: "px-2 py-0.5 text-[10px] rounded-md gap-1",
+        md: "px-2.5 py-0.5 text-[11px] rounded-full gap-1.5",
+        lg: "px-3 py-1 text-xs rounded-full gap-2",
+      },
+    },
+    defaultVariants: {
+      variant: "neutral",
+      size: "md",
+    },
+  }
+);
 
-  const sizes = {
-    sm: "px-2 py-0.5 text-[10px] rounded-md gap-1",
-    md: "px-2.5 py-0.5 text-[11px] rounded-full gap-1.5",
-    lg: "px-3 py-1 text-xs rounded-full gap-2",
-  };
-
+export const Badge = forwardRef(function Badge(
+  {
+    variant = "neutral",
+    size = "md",
+    className,
+    dot = false,
+    children,
+    ...props
+  },
+  ref
+) {
   return (
     <span
-      className={`inline-flex items-center border tracking-tight ${variants[variant] || variants.neutral} ${sizes[size] || sizes.md} ${className}`}
+      ref={ref}
+      data-slot="badge"
+      data-variant={variant}
+      data-size={size}
+      className={cn(badgeVariants({ variant, size }), className)}
       {...props}
     >
       {dot && (
         <span
-          className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+          data-slot="badge-dot"
+          className={cn(
+            "size-1.5 rounded-full shrink-0",
             variant === "red"
               ? "bg-accent-red animate-pulse"
               : variant === "yellow"
               ? "bg-accent-yellow"
               : "bg-text-muted"
-          }`}
+          )}
         />
       )}
       {children}
     </span>
   );
-}
+});
+
+export default Badge;

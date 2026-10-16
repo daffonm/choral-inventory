@@ -2,19 +2,58 @@
 
 import React, { forwardRef } from "react";
 import Link from "next/link";
+import { cva } from "class-variance-authority";
+import { cn } from "../../lib/utils";
 
 /**
- * Reusable Button component blending Apple tactile feel and Emil Kowalski motion laws.
- * - Tactile immediate response on pointer-down (:active scale 0.97).
+ * Button Variants conforming to shadcn CVA architecture and Emil Kowalski motion laws:
+ * - Tactile immediate response on press (scale 0.97 via .apple-press).
  * - Exact property transitions (no 'transition: all').
- * - Concentric corner radii matching parent padding.
- * - Supports href prop to render accessible Next.js Link without invalid button-inside-anchor nesting.
+ * - Data slots (data-slot="button") for semantic introspection and styling hooks.
  */
+export const buttonVariants = cva(
+  "apple-press inline-flex items-center justify-center font-semibold select-none outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-accent-yellow/50 disabled:opacity-50 disabled:pointer-events-none transition-[background-color,border-color,color,box-shadow,transform] will-change-transform",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-accent-yellow hover:bg-accent-yellow-hover text-black shadow-xs border border-accent-yellow-border font-bold",
+        neon:
+          "neon-pro-cta font-bold",
+        danger:
+          "bg-accent-red hover:bg-accent-red-hover text-white shadow-xs border border-accent-red-border font-bold",
+        secondary:
+          "bg-surface-card hover:bg-surface-muted text-black-primary border border-border-default shadow-2xs",
+        ghost:
+          "bg-transparent hover:bg-surface-muted text-text-secondary hover:text-black-primary border border-transparent",
+        glass:
+          "apple-card-glass hover:bg-white/[0.08] text-white font-medium border border-white/[0.1]",
+        dark:
+          "bg-black-primary hover:bg-black-hover text-white border border-black-subtle shadow-xs",
+        outline:
+          "bg-transparent border border-border-default hover:bg-surface-muted text-black-primary",
+      },
+      size: {
+        xs: "h-6 px-2 text-[10px] rounded-[5px] gap-1",
+        sm: "h-7 px-2.5 text-[11px] rounded-[6px] gap-1.5",
+        md: "h-9 px-3.5 text-xs rounded-[8px] gap-2",
+        lg: "h-10 px-4 text-sm rounded-[10px] gap-2.5",
+        icon: "size-8 p-0 rounded-[8px] flex items-center justify-center shrink-0",
+        iconSm: "size-7 p-0 rounded-[6px] flex items-center justify-center shrink-0",
+      },
+    },
+    defaultVariants: {
+      variant: "secondary",
+      size: "md",
+    },
+  }
+);
+
 export const Button = forwardRef(function Button(
   {
+    className,
     variant = "secondary",
     size = "md",
-    className = "",
     children,
     disabled = false,
     icon: Icon,
@@ -24,46 +63,20 @@ export const Button = forwardRef(function Button(
   },
   ref
 ) {
-  const baseStyles =
-    "apple-press inline-flex items-center justify-center font-semibold select-none outline-none focus:outline-none focus:ring-1 focus:ring-accent-yellow/50 disabled:opacity-50 disabled:pointer-events-none transition-[background-color,border-color,color,box-shadow,transform] will-change-transform";
-
-  const variants = {
-    primary:
-      "bg-accent-yellow hover:bg-accent-yellow-hover text-black shadow-xs border border-accent-yellow-border font-bold",
-    neon:
-      "neon-pro-cta font-bold",
-    danger:
-      "bg-accent-red hover:bg-accent-red-hover text-white shadow-xs border border-accent-red-border font-bold",
-    secondary:
-      "bg-surface-card hover:bg-surface-muted text-black-primary border border-border-default shadow-2xs",
-    ghost:
-      "bg-transparent hover:bg-surface-muted text-text-secondary hover:text-black-primary border border-transparent",
-    glass:
-      "apple-card-glass hover:bg-white/[0.08] text-white font-medium border border-white/[0.1]",
-    dark:
-      "bg-black-primary hover:bg-black-hover text-white border border-black-subtle shadow-xs",
-  };
-
-  const sizes = {
-    xs: "h-6 px-2 text-[10px] rounded-[5px] gap-1",
-    sm: "h-7 px-2.5 text-[11px] rounded-[6px] gap-1.5",
-    md: "h-9 px-3.5 text-xs rounded-[8px] gap-2",
-    lg: "h-10 px-4 text-sm rounded-[10px] gap-2.5",
-    icon: "w-8 h-8 p-0 rounded-[8px] flex items-center justify-center shrink-0",
-    iconSm: "w-7 h-7 p-0 rounded-[6px] flex items-center justify-center shrink-0",
-  };
-
-  const buttonClasses = `${baseStyles} ${variants[variant] || variants.secondary} ${sizes[size] || sizes.md} ${className}`;
+  const classes = cn(buttonVariants({ variant, size }), className);
 
   if (href) {
     return (
       <Link
         ref={ref}
         href={href}
-        className={buttonClasses}
+        data-slot="button"
+        data-variant={variant}
+        data-size={size}
+        className={classes}
         {...props}
       >
-        {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}
+        {Icon && <Icon className="size-3.5 shrink-0" />}
         {children}
       </Link>
     );
@@ -74,11 +87,16 @@ export const Button = forwardRef(function Button(
       ref={ref}
       type={type}
       disabled={disabled}
-      className={buttonClasses}
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
+      className={classes}
       {...props}
     >
-      {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}
+      {Icon && <Icon className="size-3.5 shrink-0" />}
       {children}
     </button>
   );
 });
+
+export default Button;

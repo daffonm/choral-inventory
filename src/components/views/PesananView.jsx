@@ -11,6 +11,12 @@ import {
   Button,
   Badge,
   SegmentedControl,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -29,7 +35,7 @@ export default function PesananView({ lang: propLang }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -80,72 +86,70 @@ export default function PesananView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">{daftarPesanan.length} Pesanan Diproses</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Order ID</th>
-                    <th className="p-3">Marketplace</th>
-                    <th className="p-3">Channel Penjualan</th>
-                    <th className="p-3">SKU Pesanan</th>
-                    <th className="p-3">Quantity</th>
-                    <th className="p-3">Customer &amp; Kurir</th>
-                    <th className="p-3">Waktu Pesan</th>
-                    <th className="p-3 text-right">Status Fulfillment</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {daftarPesanan.map((item) => (
-                    <tr key={item.orderId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.orderId}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.marketplace}
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="neutral" size="sm">{item.channel}</Badge>
-                      </td>
-                      <td className="p-3 font-mono text-[11px] font-bold text-accent-yellow-hover">
-                        {item.sku}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.quantity} pcs
-                      </td>
-                      <td className="p-3">
-                        <div className="font-semibold text-black-primary">{item.customer}</div>
-                        <div className="text-[10px] text-text-muted font-mono">{item.kurir}</div>
-                      </td>
-                      <td className="p-3 font-mono text-[11px] text-text-secondary">
-                        {item.waktuPesan}
-                      </td>
-                      <td className="p-3 text-right">
-                        <Badge
-                          variant={
-                            item.status === "Completed"
-                              ? "neutral"
-                              : item.status === "Waiting Fulfillment" || item.status === "Picking" || item.status === "Packing"
-                              ? "yellow"
-                              : "neutral"
-                          }
-                          dot={item.status !== "Completed"}
-                          size="sm"
-                        >
-                          {item.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Marketplace</TableHead>
+                  <TableHead>Channel Penjualan</TableHead>
+                  <TableHead>SKU Pesanan</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Customer &amp; Kurir</TableHead>
+                  <TableHead>Waktu Pesan</TableHead>
+                  <TableHead className="text-right">Status Fulfillment</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {daftarPesanan.map((item) => (
+                  <TableRow key={item.orderId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.orderId}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.marketplace}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="neutral" size="sm">{item.channel}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] font-bold text-accent-yellow-hover">
+                      {item.sku}
+                    </TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.quantity} pcs
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-semibold text-black-primary">{item.customer}</div>
+                      <div className="text-[10px] text-text-muted font-mono">{item.kurir}</div>
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] text-text-secondary">
+                      {item.waktuPesan}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={
+                          item.status === "Completed"
+                            ? "neutral"
+                            : item.status === "Waiting Fulfillment" || item.status === "Picking" || item.status === "Packing"
+                            ? "yellow"
+                            : "neutral"
+                        }
+                        dot={item.status !== "Completed"}
+                        size="sm"
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
 
       {/* TAB 2: PROSES FULFILLMENT (6 TAHAPAN) */}
       {activeTab === "fulfillment" && (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
               <div>
@@ -216,44 +220,42 @@ export default function PesananView({ lang: propLang }) {
             <Badge variant="neutral">Arsip Pesanan</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Order ID</th>
-                    <th className="p-3">Produk</th>
-                    <th className="p-3">Channel Pembelian</th>
-                    <th className="p-3">Nilai Transaksi</th>
-                    <th className="p-3">Tanggal Selesai</th>
-                    <th className="p-3">Rating / Bukti</th>
-                    <th className="p-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {riwayatPesanan.map((item) => (
-                    <tr key={item.orderId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.orderId}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.produk}
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="neutral" size="sm">{item.channel}</Badge>
-                      </td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.nilaiTransaksi}
-                      </td>
-                      <td className="p-3 font-mono text-text-secondary">{item.tanggal}</td>
-                      <td className="p-3 text-[11px] text-text-muted">{item.rating}</td>
-                      <td className="p-3 text-right">
-                        <Badge variant="neutral" size="sm">{item.status}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>Channel Pembelian</TableHead>
+                  <TableHead>Nilai Transaksi</TableHead>
+                  <TableHead>Tanggal Selesai</TableHead>
+                  <TableHead>Rating / Bukti</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {riwayatPesanan.map((item) => (
+                  <TableRow key={item.orderId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.orderId}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.produk}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="neutral" size="sm">{item.channel}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.nilaiTransaksi}
+                    </TableCell>
+                    <TableCell className="font-mono text-text-secondary">{item.tanggal}</TableCell>
+                    <TableCell className="text-[11px] text-text-muted">{item.rating}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="neutral" size="sm">{item.status}</Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

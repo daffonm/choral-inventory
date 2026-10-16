@@ -12,6 +12,12 @@ import {
   Badge,
   SegmentedControl,
   Input,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -34,7 +40,7 @@ export default function MasterDataView({ lang: propLang }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* 1. Module Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -99,57 +105,55 @@ export default function MasterDataView({ lang: propLang }) {
             <Badge variant="neutral">{produk.length} SKU Aktif</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">SKU</th>
-                    <th className="p-3">Nama Produk</th>
-                    <th className="p-3">Kategori</th>
-                    <th className="p-3">Variant / Size</th>
-                    <th className="p-3">Warna</th>
-                    <th className="p-3">Barcode</th>
-                    <th className="p-3">Satuan</th>
-                    <th className="p-3">Jenis Barang</th>
-                    <th className="p-3 text-right">Harga Jual</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {produk
-                    .filter((p) =>
-                      p.namaProduk.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                      p.sku.toLowerCase().includes(searchFilter.toLowerCase())
-                    )
-                    .map((item) => (
-                      <tr key={item.sku} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                        <td className="p-3 font-mono font-bold text-black-primary">
-                          {item.sku}
-                        </td>
-                        <td className="p-3 font-semibold text-black-primary">
-                          {item.namaProduk}
-                        </td>
-                        <td className="p-3">
-                          <Badge variant="neutral" size="sm">{item.kategori}</Badge>
-                        </td>
-                        <td className="p-3 text-text-secondary">
-                          {item.variant} &bull; <span className="font-mono">{item.size}</span>
-                        </td>
-                        <td className="p-3 text-text-secondary">{item.color}</td>
-                        <td className="p-3 font-mono text-[11px] text-text-muted">
-                          {item.barcode}
-                        </td>
-                        <td className="p-3">{item.satuan}</td>
-                        <td className="p-3">
-                          <Badge variant="yellow" size="sm">{item.jenisBarang}</Badge>
-                        </td>
-                        <td className="p-3 text-right font-mono font-bold text-black-primary">
-                          Rp {formatNumber(item.price)}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Nama Produk</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Variant / Size</TableHead>
+                  <TableHead>Warna</TableHead>
+                  <TableHead>Barcode</TableHead>
+                  <TableHead>Satuan</TableHead>
+                  <TableHead>Jenis Barang</TableHead>
+                  <TableHead className="text-right">Harga Jual</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {produk
+                  .filter((p) =>
+                    p.namaProduk.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                    p.sku.toLowerCase().includes(searchFilter.toLowerCase())
+                  )
+                  .map((item) => (
+                    <TableRow key={item.sku}>
+                      <TableCell className="font-mono font-bold text-black-primary">
+                        {item.sku}
+                      </TableCell>
+                      <TableCell className="font-semibold text-black-primary">
+                        {item.namaProduk}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="neutral" size="sm">{item.kategori}</Badge>
+                      </TableCell>
+                      <TableCell className="text-text-secondary">
+                        {item.variant} &bull; <span className="font-mono">{item.size}</span>
+                      </TableCell>
+                      <TableCell className="text-text-secondary">{item.color}</TableCell>
+                      <TableCell className="font-mono text-[11px] text-text-muted">
+                        {item.barcode}
+                      </TableCell>
+                      <TableCell>{item.satuan}</TableCell>
+                      <TableCell>
+                        <Badge variant="yellow" size="sm">{item.jenisBarang}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-mono font-bold text-black-primary">
+                        Rp {formatNumber(item.price)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -169,45 +173,43 @@ export default function MasterDataView({ lang: propLang }) {
             <Badge variant="neutral">{material.length} Jenis Bahan</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Kode Material</th>
-                    <th className="p-3">Nama Material</th>
-                    <th className="p-3">Jenis Material</th>
-                    <th className="p-3">Satuan</th>
-                    <th className="p-3">Stok Tersedia</th>
-                    <th className="p-3">Supplier Utama</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {material
-                    .filter((m) =>
-                      m.namaMaterial.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                      m.kodeMaterial.toLowerCase().includes(searchFilter.toLowerCase())
-                    )
-                    .map((item) => (
-                      <tr key={item.kodeMaterial} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                        <td className="p-3 font-mono font-bold text-black-primary">
-                          {item.kodeMaterial}
-                        </td>
-                        <td className="p-3 font-semibold text-black-primary">
-                          {item.namaMaterial}
-                        </td>
-                        <td className="p-3">
-                          <Badge variant="neutral" size="sm">{item.jenisMaterial}</Badge>
-                        </td>
-                        <td className="p-3 font-mono">{item.satuan}</td>
-                        <td className="p-3 font-mono font-bold text-black-primary">
-                          {item.stokTersedia} {item.satuan}
-                        </td>
-                        <td className="p-3 text-text-secondary">{item.supplierUtama}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Kode Material</TableHead>
+                  <TableHead>Nama Material</TableHead>
+                  <TableHead>Jenis Material</TableHead>
+                  <TableHead>Satuan</TableHead>
+                  <TableHead>Stok Tersedia</TableHead>
+                  <TableHead>Supplier Utama</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {material
+                  .filter((m) =>
+                    m.namaMaterial.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                    m.kodeMaterial.toLowerCase().includes(searchFilter.toLowerCase())
+                  )
+                  .map((item) => (
+                    <TableRow key={item.kodeMaterial}>
+                      <TableCell className="font-mono font-bold text-black-primary">
+                        {item.kodeMaterial}
+                      </TableCell>
+                      <TableCell className="font-semibold text-black-primary">
+                        {item.namaMaterial}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="neutral" size="sm">{item.jenisMaterial}</Badge>
+                      </TableCell>
+                      <TableCell className="font-mono">{item.satuan}</TableCell>
+                      <TableCell className="font-mono font-bold text-black-primary">
+                        {item.stokTersedia} {item.satuan}
+                      </TableCell>
+                      <TableCell className="text-text-secondary">{item.supplierUtama}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -227,43 +229,41 @@ export default function MasterDataView({ lang: propLang }) {
             <Badge variant="neutral">{supplier.length} Rekanan Aktif</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Nama Supplier</th>
-                    <th className="p-3">Kontak Supplier</th>
-                    <th className="p-3">Jenis Barang Supplier</th>
-                    <th className="p-3">Lokasi / Kota</th>
-                    <th className="p-3">Lead Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {supplier
-                    .filter((s) =>
-                      s.namaSupplier.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                      s.jenisBarangSupplier.toLowerCase().includes(searchFilter.toLowerCase())
-                    )
-                    .map((item, idx) => (
-                      <tr key={idx} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                        <td className="p-3 font-bold text-black-primary">
-                          {item.namaSupplier}
-                        </td>
-                        <td className="p-3 font-mono text-[11px] text-text-secondary">
-                          {item.kontakSupplier}
-                        </td>
-                        <td className="p-3">
-                          <Badge variant="yellow" size="sm">{item.jenisBarangSupplier}</Badge>
-                        </td>
-                        <td className="p-3 text-text-secondary">{item.kota}</td>
-                        <td className="p-3 font-mono font-semibold text-black-primary">
-                          {item.leadTime}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama Supplier</TableHead>
+                  <TableHead>Kontak Supplier</TableHead>
+                  <TableHead>Jenis Barang Supplier</TableHead>
+                  <TableHead>Lokasi / Kota</TableHead>
+                  <TableHead>Lead Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {supplier
+                  .filter((s) =>
+                    s.namaSupplier.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                    s.jenisBarangSupplier.toLowerCase().includes(searchFilter.toLowerCase())
+                  )
+                  .map((item, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell className="font-bold text-black-primary">
+                        {item.namaSupplier}
+                      </TableCell>
+                      <TableCell className="font-mono text-[11px] text-text-secondary">
+                        {item.kontakSupplier}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="yellow" size="sm">{item.jenisBarangSupplier}</Badge>
+                      </TableCell>
+                      <TableCell className="text-text-secondary">{item.kota}</TableCell>
+                      <TableCell className="font-mono font-semibold text-black-primary">
+                        {item.leadTime}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -282,7 +282,7 @@ export default function MasterDataView({ lang: propLang }) {
                 </div>
                 <Badge variant="neutral" size="sm">Kapasitas: {g.kapasitasMax}</Badge>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="flex flex-col gap-3">
                 <div>
                   <span className="text-[11px] font-semibold text-text-secondary block">
                     {lang === "id" ? "Lokasi Penyimpanan:" : "Storage Location:"}
@@ -324,44 +324,42 @@ export default function MasterDataView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">7 Channel Aktif</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">ID Channel</th>
-                    <th className="p-3">Nama Channel</th>
-                    <th className="p-3">Tipe Saluran</th>
-                    <th className="p-3">Biaya / Komisi</th>
-                    <th className="p-3">Alokasi Stok Fisik</th>
-                    <th className="p-3">Penanggung Jawab (PIC)</th>
-                    <th className="p-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {channel.map((item) => (
-                    <tr key={item.channelId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.channelId}
-                      </td>
-                      <td className="p-3 font-bold text-black-primary">
-                        {item.namaChannel}
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="neutral" size="sm">{item.tipe}</Badge>
-                      </td>
-                      <td className="p-3 font-mono">{item.komisi}</td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {formatNumber(item.stokDialokasikan)} pcs
-                      </td>
-                      <td className="p-3 text-text-secondary">{item.pic}</td>
-                      <td className="p-3 text-right">
-                        <Badge variant="yellow" dot size="sm">{item.status}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID Channel</TableHead>
+                  <TableHead>Nama Channel</TableHead>
+                  <TableHead>Tipe Saluran</TableHead>
+                  <TableHead>Biaya / Komisi</TableHead>
+                  <TableHead>Alokasi Stok Fisik</TableHead>
+                  <TableHead>Penanggung Jawab (PIC)</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {channel.map((item) => (
+                  <TableRow key={item.channelId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.channelId}
+                    </TableCell>
+                    <TableCell className="font-bold text-black-primary">
+                      {item.namaChannel}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="neutral" size="sm">{item.tipe}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono">{item.komisi}</TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {formatNumber(item.stokDialokasikan)} pcs
+                    </TableCell>
+                    <TableCell className="text-text-secondary">{item.pic}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="yellow" dot size="sm">{item.status}</Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

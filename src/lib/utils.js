@@ -1,3 +1,13 @@
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Merges class names deterministically resolving Tailwind CSS conflicts.
+ */
+export function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
+
 /**
  * Deterministic number formatter for Next.js SSR & Client Hydration.
  * Prevents "Hydration failed because the server rendered text didn't match the client"
@@ -10,3 +20,4 @@ export function formatNumber(val) {
   // Pure deterministic regex thousand separator: 1250 -> "1.250"
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+

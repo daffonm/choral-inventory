@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, forwardRef } from "react";
+import { cn } from "../../lib/utils";
 
 // Global tracker for Emil Kowalski's "skip delay on subsequent hovers" rule
 let isAnyTooltipOpen = false;
@@ -11,13 +12,18 @@ let globalCloseTimer = null;
  * - Never animates from scale(0); enters from scale(0.95) with opacity: 0.
  * - Skip delay on subsequent hovers: once any tooltip opens, adjacent tooltips open with 0ms delay.
  * - Anchored with transform-origin.
+ * - data-slot attributes for shadcn introspection.
  */
-export function Tooltip({
-  content,
-  children,
-  position = "right",
-  className = "",
-}) {
+export const Tooltip = forwardRef(function Tooltip(
+  {
+    content,
+    children,
+    position = "right",
+    className,
+    ...props
+  },
+  ref
+) {
   const [isOpen, setIsOpen] = useState(false);
   const openTimer = useRef(null);
 
@@ -59,22 +65,30 @@ export function Tooltip({
 
   return (
     <div
+      ref={ref}
+      data-slot="tooltip"
       className="relative inline-flex"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      {...props}
     >
       {children}
 
       {isOpen && content && (
         <div
           role="tooltip"
-          className={`absolute z-50 px-2.5 py-1 rounded-[6px] bg-black-surface border border-white/[0.12] text-xs font-semibold text-white shadow-xl whitespace-nowrap pointer-events-none transition-[opacity,transform] duration-150 ease-[var(--ease-out)] animate-in fade-in zoom-in-95 ${
-            positions[position] || positions.right
-          } ${className}`}
+          data-slot="tooltip-content"
+          className={cn(
+            "absolute z-50 px-2.5 py-1 rounded-[6px] bg-black-surface border border-white/[0.12] text-xs font-semibold text-white shadow-xl whitespace-nowrap pointer-events-none transition-[opacity,transform] duration-150 ease-[var(--ease-out)] animate-in fade-in zoom-in-95",
+            positions[position] || positions.right,
+            className
+          )}
         >
           {content}
         </div>
       )}
     </div>
   );
-}
+});
+
+export default Tooltip;

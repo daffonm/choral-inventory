@@ -12,6 +12,12 @@ import {
   SegmentedControl,
   CopyInput,
   Badge,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -126,7 +132,7 @@ export default function SettingsView({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Title & Description */}
       <div className="pb-1 border-b border-border-subtle">
         <h2 className="text-2xl font-black tracking-tight text-black-primary">
@@ -218,7 +224,7 @@ export default function SettingsView({
           </Button>
         </CardHeader>
 
-        <CardContent className="divide-y divide-border-subtle p-0 space-y-0">
+        <CardContent className="divide-y divide-border-subtle p-0">
           <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-md">
               <div className="text-xs font-bold text-black-primary">{t.publicKeyLabel}</div>
@@ -295,26 +301,24 @@ export default function SettingsView({
           <Badge variant="neutral">src/components/ui</Badge>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-surface-muted text-text-secondary font-semibold">
-                <tr>
-                  <th className="p-3 border-b border-border-subtle">Before</th>
-                  <th className="p-3 border-b border-border-subtle">After</th>
-                  <th className="p-3 border-b border-border-subtle">Why (Emil Kowalski Philosophy)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border-subtle text-text-primary">
-                {emilDesignAudits.map((audit, idx) => (
-                  <tr key={idx} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                    <td className="p-3 font-mono text-[11px] text-text-muted">{audit.before}</td>
-                    <td className="p-3 font-mono text-[11px] text-black-primary font-bold">{audit.after}</td>
-                    <td className="p-3 text-text-secondary">{audit.why}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Before</TableHead>
+                <TableHead>After</TableHead>
+                <TableHead>Why (Emil Kowalski Philosophy)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {emilDesignAudits.map((audit, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="font-mono text-[11px] text-text-muted">{audit.before}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-black-primary font-bold">{audit.after}</TableCell>
+                  <TableCell className="text-text-secondary">{audit.why}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

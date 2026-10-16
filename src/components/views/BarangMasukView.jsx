@@ -11,6 +11,12 @@ import {
   Button,
   Badge,
   SegmentedControl,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -29,7 +35,7 @@ export default function BarangMasukView({ lang: propLang }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -80,48 +86,46 @@ export default function BarangMasukView({ lang: propLang }) {
             <Badge variant="neutral">{penerimaanSupplier.length} Dokumen Penerimaan</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Nomor Penerimaan</th>
-                    <th className="p-3">Supplier Vendor</th>
-                    <th className="p-3">Tanggal Masuk</th>
-                    <th className="p-3">Produk / Material</th>
-                    <th className="p-3">Quantity</th>
-                    <th className="p-3">Lokasi Gudang</th>
-                    <th className="p-3">Status Penerimaan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {penerimaanSupplier.map((item) => (
-                    <tr key={item.nomorPenerimaan} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.nomorPenerimaan}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.supplier}
-                      </td>
-                      <td className="p-3 font-mono text-text-secondary">{item.tanggal}</td>
-                      <td className="p-3 text-text-primary">{item.produkMaterial}</td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.quantity}
-                      </td>
-                      <td className="p-3 text-text-muted">{item.lokasiGudang}</td>
-                      <td className="p-3">
-                        <Badge
-                          variant={item.statusPenerimaan.includes("Lengkap") ? "yellow" : "neutral"}
-                          dot
-                          size="sm"
-                        >
-                          {item.statusPenerimaan}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nomor Penerimaan</TableHead>
+                  <TableHead>Supplier Vendor</TableHead>
+                  <TableHead>Tanggal Masuk</TableHead>
+                  <TableHead>Produk / Material</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Lokasi Gudang</TableHead>
+                  <TableHead>Status Penerimaan</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {penerimaanSupplier.map((item) => (
+                  <TableRow key={item.nomorPenerimaan}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.nomorPenerimaan}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.supplier}
+                    </TableCell>
+                    <TableCell className="font-mono text-text-secondary">{item.tanggal}</TableCell>
+                    <TableCell className="text-text-primary">{item.produkMaterial}</TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.quantity}
+                    </TableCell>
+                    <TableCell className="text-text-muted">{item.lokasiGudang}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={item.statusPenerimaan.includes("Lengkap") ? "yellow" : "neutral"}
+                        dot
+                        size="sm"
+                      >
+                        {item.statusPenerimaan}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -141,50 +145,48 @@ export default function BarangMasukView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">Siap Masuk Stok</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Production ID</th>
-                    <th className="p-3">Produk Jadi</th>
-                    <th className="p-3">Batch Code</th>
-                    <th className="p-3">Tanggal Masuk</th>
-                    <th className="p-3">Quantity</th>
-                    <th className="p-3">Tujuan Gudang</th>
-                    <th className="p-3 text-right">Status QC</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {hasilProduksi.map((item) => (
-                    <tr key={item.productionId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.productionId}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.produk}
-                      </td>
-                      <td className="p-3 font-mono text-[11px] text-text-muted">
-                        {item.batchCode}
-                      </td>
-                      <td className="p-3 font-mono text-text-secondary">{item.tanggalMasuk}</td>
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        +{item.quantity} pcs
-                      </td>
-                      <td className="p-3 text-text-secondary">{item.tujuanGudang}</td>
-                      <td className="p-3 text-right">
-                        <Badge
-                          variant={item.statusQC === "Passed" ? "yellow" : "red"}
-                          dot
-                          size="sm"
-                        >
-                          {item.statusQC}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Production ID</TableHead>
+                  <TableHead>Produk Jadi</TableHead>
+                  <TableHead>Batch Code</TableHead>
+                  <TableHead>Tanggal Masuk</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Tujuan Gudang</TableHead>
+                  <TableHead className="text-right">Status QC</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {hasilProduksi.map((item) => (
+                  <TableRow key={item.productionId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.productionId}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.produk}
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] text-text-muted">
+                      {item.batchCode}
+                    </TableCell>
+                    <TableCell className="font-mono text-text-secondary">{item.tanggalMasuk}</TableCell>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      +{item.quantity} pcs
+                    </TableCell>
+                    <TableCell className="text-text-secondary">{item.tujuanGudang}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={item.statusQC === "Passed" ? "yellow" : "red"}
+                        dot
+                        size="sm"
+                      >
+                        {item.statusQC}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
@@ -204,56 +206,53 @@ export default function BarangMasukView({ lang: propLang }) {
             <Badge variant="red" size="sm">QC Gate</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Return ID</th>
-                    <th className="p-3">Produk</th>
-                    <th className="p-3">Channel Asal</th>
-                    <th className="p-3">Qty</th>
-                    <th className="p-3">Alasan Customer</th>
-                    <th className="p-3">Status QC</th>
-                    <th className="p-3">Keputusan Retur</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {barangRetur.map((item) => (
-                    <tr key={item.returnId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.returnId}
-                      </td>
-                      <td className="p-3 font-semibold text-black-primary">
-                        {item.produk}
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="neutral" size="sm">{item.channelAsal}</Badge>
-                      </td>
-                      <td className="p-3 font-mono font-bold">{item.quantity} pcs</td>
-                      <td className="p-3 text-text-secondary italic">&ldquo;{item.alasanCustomer}&rdquo;</td>
-                      <td className="p-3">
-                        <Badge
-                          variant={item.statusQC === "Passed" ? "yellow" : "red"}
-                          dot
-                          size="sm"
-                        >
-                          {item.statusQC}
-                        </Badge>
-                      </td>
-                      <td className="p-3 font-medium text-black-primary">
-                        <span className={`inline-block px-2 py-0.5 rounded text-[11px] ${
-                          item.statusQC === "Passed"
-                            ? "bg-accent-yellow-surface text-black-primary border border-accent-yellow-border"
-                            : "bg-accent-red-surface text-accent-red border border-accent-red-border"
-                        }`}>
-                          {item.keputusanRetur}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Return ID</TableHead>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>Channel Asal</TableHead>
+                  <TableHead>Qty</TableHead>
+                  <TableHead>Alasan Customer</TableHead>
+                  <TableHead>Status QC</TableHead>
+                  <TableHead>Keputusan Retur</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {barangRetur.map((item) => (
+                  <TableRow key={item.returnId}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.returnId}
+                    </TableCell>
+                    <TableCell className="font-semibold text-black-primary">
+                      {item.produk}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="neutral" size="sm">{item.channelAsal}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono font-bold">{item.quantity} pcs</TableCell>
+                    <TableCell className="text-text-secondary italic">&ldquo;{item.alasanCustomer}&rdquo;</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={item.statusQC === "Passed" ? "yellow" : "red"}
+                        dot
+                        size="sm"
+                      >
+                        {item.statusQC}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium text-black-primary">
+                      <Badge
+                        variant={item.statusQC === "Passed" ? "yellow" : "red"}
+                        size="sm"
+                      >
+                        {item.keputusanRetur}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

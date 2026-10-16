@@ -463,35 +463,7 @@ export default function Sidebar({
 
       {/* 4. Bottom Area: Pro Banner & User Card (Emil's Concentric Nested Radius Applied) */}
       <div className="p-3 space-y-2 border-t border-white/[0.06]">
-        {/* "Boost with AI" Frosted Card: Outer R=20px, Padding=14px -> Inner Button R = 20 - 14 = 6px */}
-        {!isCollapsed && (
-          <div className="apple-card-glass rounded-[20px] p-[14px] relative overflow-hidden group">
-            {/* Ambient subtle yellow neon aura */}
-            <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-accent-yellow/10 rounded-full blur-xl pointer-events-none" />
-
-            <div className="flex items-center gap-2 mb-1.5">
-              <Icons.Sparkle className="w-3.5 h-3.5 text-accent-yellow animate-pulse" />
-              <span className="font-bold text-xs text-white tracking-tight">
-                {lang === "id" ? "Tingkatkan dengan AI" : "Boost with AI"}
-              </span>
-            </div>
-
-            <p className="text-[11px] leading-relaxed text-white/50 mb-3 font-normal">
-              {lang === "id"
-                ? "Balasan otomatis, wawasan SKU, dan alat efisiensi waktu."
-                : "AI-powered replies, tag insights, and tools that save hours."}
-            </p>
-
-            {/* Configured Yellow High-Impact CTA Button with Concentric R=6px */}
-            <Button
-              variant="neon"
-              size="sm"
-              className="w-full h-8 rounded-[6px] font-bold text-xs tracking-tight"
-            >
-              {lang === "id" ? "Tingkatkan ke Pro" : "Upgrade to Pro"}
-            </Button>
-          </div>
-        )}
+      
 
         {/* 5. User Profile Card: Outer R=16px, Padding=8px -> Inner Avatar R = 16 - 8 = 8px */}
         <div

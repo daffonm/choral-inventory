@@ -11,6 +11,12 @@ import {
   Button,
   Badge,
   SegmentedControl,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
   Icons,
 } from "../ui";
 import { useAppConfig } from "../providers/AppProvider";
@@ -28,7 +34,7 @@ export default function TransaksiView({ lang: propLang }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -66,7 +72,7 @@ export default function TransaksiView({ lang: propLang }) {
 
       {/* TAB 1: BARANG KELUAR (4 KATEGORI) */}
       {activeTab === "keluar" && (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           {/* Quick Category Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-xl bg-surface-muted/60 border border-border-subtle">
@@ -104,56 +110,54 @@ export default function TransaksiView({ lang: propLang }) {
               <Badge variant="neutral">{barangKeluar.length} Catatan Keluar</Badge>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                    <tr>
-                      <th className="p-3">ID Transaksi</th>
-                      <th className="p-3">Kategori Keluar</th>
-                      <th className="p-3">Keterangan / Tujuan</th>
-                      <th className="p-3">Total Unit</th>
-                      <th className="p-3">Petugas (PIC)</th>
-                      <th className="p-3">Waktu Transaksi</th>
-                      <th className="p-3 text-right">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border-subtle text-text-primary">
-                    {barangKeluar.map((item) => (
-                      <tr key={item.txId} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                        <td className="p-3 font-mono font-bold text-black-primary">
-                          {item.txId}
-                        </td>
-                        <td className="p-3">
-                          <Badge
-                            variant={
-                              item.kategori === "Damaged"
-                                ? "red"
-                                : item.kategori === "Fulfillment"
-                                ? "yellow"
-                                : "neutral"
-                            }
-                            dot={item.kategori === "Damaged"}
-                            size="sm"
-                          >
-                            {item.kategori}
-                          </Badge>
-                        </td>
-                        <td className="p-3 font-medium text-black-primary max-w-sm">
-                          {item.keterangan}
-                        </td>
-                        <td className="p-3 font-mono font-bold text-black-primary">
-                          -{item.totalPcs} pcs
-                        </td>
-                        <td className="p-3 text-text-secondary">{item.pic}</td>
-                        <td className="p-3 font-mono text-[11px] text-text-muted">{item.tanggal}</td>
-                        <td className="p-3 text-right">
-                          <Badge variant="neutral" size="sm">{item.status}</Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID Transaksi</TableHead>
+                    <TableHead>Kategori Keluar</TableHead>
+                    <TableHead>Keterangan / Tujuan</TableHead>
+                    <TableHead>Total Unit</TableHead>
+                    <TableHead>Petugas (PIC)</TableHead>
+                    <TableHead>Waktu Transaksi</TableHead>
+                    <TableHead className="text-right">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {barangKeluar.map((item) => (
+                    <TableRow key={item.txId}>
+                      <TableCell className="font-mono font-bold text-black-primary">
+                        {item.txId}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            item.kategori === "Damaged"
+                              ? "red"
+                              : item.kategori === "Fulfillment"
+                              ? "yellow"
+                              : "neutral"
+                          }
+                          dot={item.kategori === "Damaged"}
+                          size="sm"
+                        >
+                          {item.kategori}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium text-black-primary max-w-sm">
+                        {item.keterangan}
+                      </TableCell>
+                      <TableCell className="font-mono font-bold text-black-primary">
+                        -{item.totalPcs} pcs
+                      </TableCell>
+                      <TableCell className="text-text-secondary">{item.pic}</TableCell>
+                      <TableCell className="font-mono text-[11px] text-text-muted">{item.tanggal}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="neutral" size="sm">{item.status}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </div>
@@ -174,52 +178,50 @@ export default function TransaksiView({ lang: propLang }) {
             <Badge variant="yellow" size="sm">Sinkron 100%</Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary font-semibold border-b border-border-subtle">
-                  <tr>
-                    <th className="p-3">Trx ID</th>
-                    <th className="p-3">Jenis Transaksi</th>
-                    <th className="p-3">No. Referensi</th>
-                    <th className="p-3">Deskripsi Transaksi</th>
-                    <th className="p-3">Quantity Delta</th>
-                    <th className="p-3">Pihak Terkait</th>
-                    <th className="p-3 text-right">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle text-text-primary">
-                  {riwayatTransaksi.map((item) => (
-                    <tr key={item.id} className="hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                      <td className="p-3 font-mono font-bold text-black-primary">
-                        {item.id}
-                      </td>
-                      <td className="p-3">
-                        <Badge
-                          variant={item.tipeBadge}
-                          dot={item.tipeBadge === "red"}
-                          size="sm"
-                        >
-                          {item.jenisTransaksi}
-                        </Badge>
-                      </td>
-                      <td className="p-3 font-mono text-[11px] font-bold text-accent-yellow-hover">
-                        {item.referensi}
-                      </td>
-                      <td className="p-3 text-black-primary max-w-xs">{item.deskripsi}</td>
-                      <td className="p-3 font-mono font-bold">
-                        <span className={item.quantity.startsWith("+") ? "text-accent-yellow-hover font-bold" : "text-black-primary"}>
-                          {item.quantity}
-                        </span>
-                      </td>
-                      <td className="p-3 text-text-secondary">{item.pihakTerkait}</td>
-                      <td className="p-3 text-right font-mono text-[11px] text-text-muted">
-                        {item.tanggal}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Trx ID</TableHead>
+                  <TableHead>Jenis Transaksi</TableHead>
+                  <TableHead>No. Referensi</TableHead>
+                  <TableHead>Deskripsi Transaksi</TableHead>
+                  <TableHead>Quantity Delta</TableHead>
+                  <TableHead>Pihak Terkait</TableHead>
+                  <TableHead className="text-right">Timestamp</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {riwayatTransaksi.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-mono font-bold text-black-primary">
+                      {item.id}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={item.tipeBadge}
+                        dot={item.tipeBadge === "red"}
+                        size="sm"
+                      >
+                        {item.jenisTransaksi}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] font-bold text-accent-yellow-hover">
+                      {item.referensi}
+                    </TableCell>
+                    <TableCell className="text-black-primary max-w-xs">{item.deskripsi}</TableCell>
+                    <TableCell className="font-mono font-bold">
+                      <span className={item.quantity.startsWith("+") ? "text-accent-yellow-hover font-bold" : "text-black-primary"}>
+                        {item.quantity}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-text-secondary">{item.pihakTerkait}</TableCell>
+                    <TableCell className="text-right font-mono text-[11px] text-text-muted">
+                      {item.tanggal}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { cn } from "../../lib/utils";
 
 /**
  * Universal SVG Icon System for CHORAL Inventory
@@ -8,10 +9,11 @@ import React from "react";
  * - 24x24 viewBox, stroke-width 1.75, stroke="currentColor", fill="none"
  * - Round line caps and joins
  * - Zero emoji/emote dependencies
+ * - Conforms to shadcn data-slot="icon" and size-4 standard
  */
 
 const createIcon = (d) => {
-  const IconComponent = ({ className = "w-4 h-4", strokeWidth = 1.75, ...props }) => (
+  const IconComponent = ({ className, strokeWidth = 1.75, ...props }) => (
     <svg
       viewBox="0 0 24 24"
       fill="none"
@@ -19,7 +21,8 @@ const createIcon = (d) => {
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={className}
+      data-slot="icon"
+      className={cn("size-4 shrink-0", className)}
       {...props}
     >
       {d}

@@ -1,18 +1,34 @@
 "use client";
 
 import React, { forwardRef, useState } from "react";
+import { cva } from "class-variance-authority";
 import { Button } from "./Button";
 import { Icons } from "./Icons";
+import { cn } from "../../lib/utils";
+
+export const inputVariants = cva(
+  "w-full font-medium text-black-primary bg-surface-muted border border-border-default placeholder:text-text-muted focus:outline-none focus:border-accent-yellow/70 transition-[border-color,background-color] duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed",
+  {
+    variants: {
+      size: {
+        sm: "h-8 text-xs rounded-lg",
+        md: "h-10 text-xs rounded-[10px]",
+        lg: "h-11 text-sm rounded-[10px]",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
+);
 
 /**
- * Reusable Input component.
- * - Clean Cyber Punch focus ring with zero outline-offset.
- * - Concentric nested radius: 10px.
+ * Reusable Input component conforming to shadcn & Emil Kowalski concentric radii.
  */
 export const Input = forwardRef(function Input(
   {
     type = "text",
-    className = "",
+    className,
     disabled = false,
     icon: Icon,
     size = "md",
@@ -21,9 +37,6 @@ export const Input = forwardRef(function Input(
   ref
 ) {
   const isSm = size === "sm";
-  const sizeClasses = isSm
-    ? "h-8 text-xs rounded-lg"
-    : "h-10 text-xs rounded-[10px]";
   const paddingClasses = Icon
     ? isSm
       ? "pl-8 pr-2.5"
@@ -33,19 +46,29 @@ export const Input = forwardRef(function Input(
     : "px-3.5";
 
   return (
-    <div className="relative flex items-center w-full">
+    <div data-slot="input-wrapper" className="relative flex items-center w-full">
       {Icon && (
-        <span className={`absolute ${isSm ? "left-2.5" : "left-3"} text-text-muted pointer-events-none`}>
-          {typeof Icon === "function" ? <Icon className={isSm ? "w-3.5 h-3.5" : "w-4 h-4"} /> : Icon}
+        <span
+          data-slot="input-icon"
+          className={cn(
+            "absolute text-text-muted pointer-events-none flex items-center justify-center",
+            isSm ? "left-2.5" : "left-3"
+          )}
+        >
+          {typeof Icon === "function" ? (
+            <Icon className={isSm ? "size-3.5" : "size-4"} />
+          ) : (
+            Icon
+          )}
         </span>
       )}
       <input
         ref={ref}
         type={type}
         disabled={disabled}
-        className={`w-full font-medium text-black-primary bg-surface-muted border border-border-default placeholder:text-text-muted focus:outline-none focus:border-accent-yellow/70 transition-[border-color,background-color] duration-150 ease-out ${sizeClasses} ${paddingClasses} ${
-          disabled ? "opacity-50 cursor-not-allowed" : ""
-        } ${className}`}
+        data-slot="input"
+        data-size={size}
+        className={cn(inputVariants({ size }), paddingClasses, className)}
         {...props}
       />
     </div>
@@ -62,7 +85,7 @@ export function CopyInput({
   value = "",
   masked = false,
   allowReveal = false,
-  className = "",
+  className,
   labels = { copy: "Copy", copied: "Copied!", show: "Show", hide: "Hide" },
 }) {
   const [copied, setCopied] = useState(false);
@@ -81,11 +104,15 @@ export function CopyInput({
   const displayValue = masked && !isRevealed ? "•••• •••• •••• ••••" : value;
 
   return (
-    <div className={`relative flex items-center w-full ${className}`}>
+    <div
+      data-slot="copy-input"
+      className={cn("relative flex items-center w-full", className)}
+    >
       <input
         type="text"
         readOnly
         value={displayValue}
+        data-slot="input"
         className="w-full h-10 px-3.5 pr-28 text-xs font-mono text-black-primary bg-surface-muted border border-border-default rounded-[10px] focus:outline-none select-all"
       />
       <div className="absolute right-1.5 flex items-center gap-1">
@@ -109,7 +136,7 @@ export function CopyInput({
         >
           {copied ? (
             <span className="text-accent-yellow font-bold flex items-center gap-1">
-              <Icons.Check className="w-3.5 h-3.5" />
+              <Icons.Check className="size-3.5" />
               {labels.copied}
             </span>
           ) : (
@@ -120,3 +147,5 @@ export function CopyInput({
     </div>
   );
 }
+
+export default Input;

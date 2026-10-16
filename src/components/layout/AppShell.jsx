@@ -16,7 +16,7 @@ export default function AppShell({ children }) {
       />
 
       {/* 2. Main Content View Area */}
-      <main className="flex-1 flex flex-col h-full overflow-y-auto bg-surface-canvas transition-colors duration-200">
+      <main className="flex-1 flex flex-col h-full overflow-y-auto [scrollbar-gutter:stable] bg-surface-canvas transition-colors duration-200">
         <AppHeader />
         <div className="p-6 sm:p-8 max-w-6xl w-full mx-auto flex-1">
           {children}

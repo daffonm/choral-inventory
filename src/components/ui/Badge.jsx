@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from "react";
 import { cva } from "class-variance-authority";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 /**
  * Badge Variants conforming to shadcn CVA architecture & Cyber Punch palette.
@@ -66,8 +66,8 @@ export const Badge = forwardRef(function Badge(
             variant === "red"
               ? "bg-accent-red animate-pulse"
               : variant === "yellow"
-              ? "bg-accent-yellow"
-              : "bg-text-muted"
+                ? "bg-accent-yellow"
+                : "bg-text-muted"
           )}
         />
       )}

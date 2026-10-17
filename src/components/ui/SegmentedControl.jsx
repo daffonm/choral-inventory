@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, forwardRef } from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 /**
  * Reusable SegmentedControl component.

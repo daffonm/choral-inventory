@@ -4,7 +4,7 @@ import React, { forwardRef, useState } from "react";
 import { cva } from "class-variance-authority";
 import { Button } from "./Button";
 import { Icons } from "./Icons";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 export const inputVariants = cva(
   "w-full font-medium text-black-primary bg-surface-muted border border-border-default placeholder:text-text-muted focus:outline-none focus:border-accent-yellow/70 transition-[border-color,background-color] duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed",
@@ -42,8 +42,8 @@ export const Input = forwardRef(function Input(
       ? "pl-8 pr-2.5"
       : "pl-9 pr-3"
     : isSm
-    ? "px-3"
-    : "px-3.5";
+      ? "px-3"
+      : "px-3.5";
 
   return (
     <div data-slot="input-wrapper" className="relative flex items-center w-full">

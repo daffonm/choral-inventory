@@ -3,7 +3,7 @@
 import React, { forwardRef } from "react";
 import Link from "next/link";
 import { cva } from "class-variance-authority";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 /**
  * Button Variants conforming to shadcn CVA architecture and Emil Kowalski motion laws:

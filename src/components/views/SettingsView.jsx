@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -20,7 +20,8 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
+import { useAppConfig } from "../../providers/AppProvider";
+import { seedInventoryFromDummy } from "@/lib/services/inventory-service";
 
 export default function SettingsView({
   lang: propLang,
@@ -33,6 +34,35 @@ export default function SettingsView({
   const setLang = propSetLang || appConfig.setLang;
   const theme = propThemeMode || appConfig.theme || "dark";
   const setTheme = propSetThemeMode || appConfig.setTheme;
+
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [seedResult, setSeedResult] = useState(null);
+
+  const handleSeedData = async () => {
+    setIsSeeding(true);
+    setSeedResult(null);
+    try {
+      const res = await seedInventoryFromDummy();
+      if (res.success) {
+        setSeedResult({
+          success: true,
+          message: `Berhasil menginisialisasi ${res.count} item persediaan ke Firestore dengan barcode!`,
+        });
+      } else {
+        setSeedResult({
+          success: false,
+          message: res.error || "Gagal mengimpor data ke Firestore.",
+        });
+      }
+    } catch (err) {
+      setSeedResult({
+        success: false,
+        message: err.message || "Terjadi kesalahan saat inisialisasi data.",
+      });
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   const t = {
     id: {
@@ -272,6 +302,68 @@ export default function SettingsView({
             {t.readAnnouncement}
           </Button>
         </CardFooter>
+      </Card>
+
+      {/* CARD 4.5: FIREBASE REALTIME & DATA MIGRATION */}
+      <Card className="border-accent-yellow/30 bg-surface-card">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-accent-yellow font-mono">
+                  Cloud Firestore Realtime Backend
+                </span>
+                <Badge variant="yellow" size="sm">Spark 100% Free</Badge>
+              </div>
+              <CardTitle className="mt-1">
+                {lang === "id" ? "Manajemen Data Inventaris & Realtime Sync" : "Inventory Data & Realtime Sync"}
+              </CardTitle>
+            </div>
+            <Badge variant="neutral">Modular CSV/XLSX Ready</Badge>
+          </div>
+          <CardDescription>
+            {lang === "id"
+              ? "Inisialisasi koleksi data persediaan awal ke Firestore atau sinkronisasi massal SKU gudang CHORAL.ID lengkap dengan kode barcode."
+              : "Initialize initial inventory stock to Firestore or bulk-synchronize CHORAL.ID warehouse SKUs with barcode codes."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {seedResult && (
+            <div
+              className={`p-3.5 rounded-xl border text-xs flex items-start gap-2.5 animate-in fade-in duration-200 ${seedResult.success
+                  ? "bg-green-500/10 border-green-500/20 text-green-400"
+                  : "bg-red-500/10 border-red-500/20 text-red-400"
+                }`}
+            >
+              <span className="font-bold">{seedResult.success ? "✓" : "✕"}</span>
+              <span className="leading-relaxed">{seedResult.message}</span>
+            </div>
+          )}
+
+          <div className="p-4 rounded-xl bg-surface-muted/60 border border-border-default flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-text-primary">
+                {lang === "id" ? "Inisialisasi Master Data Stok (Seed)" : "Seed Master Stock Data"}
+              </div>
+              <div className="text-[11px] text-text-secondary leading-relaxed max-w-lg">
+                {lang === "id"
+                  ? "Mengunggah data persediaan awal dari katalog CHORAL.ID ke Firestore menggunakan batch write yang aman. Siap digantikan uploader CSV/XLSX untuk update berkala."
+                  : "Uploads sample CHORAL.ID catalog to Firestore via safe batch writes. Ready to be replaced by CSV/XLSX uploader."}
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSeedData}
+              disabled={isSeeding}
+              className="shrink-0 font-bold tracking-wide"
+            >
+              {isSeeding ? "Memproses Data..." : "Inisialisasi Data Awal"}
+            </Button>
+          </div>
+        </CardContent>
       </Card>
 
       {/* CARD 5: DATA API SETTINGS */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardFooter,
   Button,
   Badge,
-  SegmentedControl,
   Table,
   TableHeader,
   TableBody,
@@ -19,19 +18,16 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { transaksiData } from "../../lib/dummyData";
+import { useAppConfig } from "../../providers/AppProvider";
+import { transaksiData } from "@/lib/dummyData";
 
-export default function TransaksiView({ lang: propLang }) {
+export default function TransaksiView({ lang: propLang, initialTab = "keluar" }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
-  const [activeTab, setActiveTab] = useState("keluar");
+  const [userTab, setUserTab] = useState(null);
+  const activeTab = userTab || initialTab;
+  const setActiveTab = setUserTab;
   const { barangKeluar, riwayatTransaksi } = transaksiData;
-
-  const tabOptions = [
-    { value: "keluar", label: lang === "id" ? "Barang Keluar (4 Kategori)" : "Goods Issue", icon: Icons.Outbound },
-    { value: "riwayat", label: lang === "id" ? "Riwayat Transaksi Terpadu" : "Unified Ledger", icon: Icons.LedgerUnified },
-  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -62,13 +58,6 @@ export default function TransaksiView({ lang: propLang }) {
           </Button>
         </div>
       </div>
-
-      {/* Tabs */}
-      <SegmentedControl
-        value={activeTab}
-        onChange={setActiveTab}
-        options={tabOptions}
-      />
 
       {/* TAB 1: BARANG KELUAR (4 KATEGORI) */}
       {activeTab === "keluar" && (
@@ -134,8 +123,8 @@ export default function TransaksiView({ lang: propLang }) {
                             item.kategori === "Damaged"
                               ? "red"
                               : item.kategori === "Fulfillment"
-                              ? "yellow"
-                              : "neutral"
+                                ? "yellow"
+                                : "neutral"
                           }
                           dot={item.kategori === "Damaged"}
                           size="sm"

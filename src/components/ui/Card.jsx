@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from "react";
 import { cva } from "class-variance-authority";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 export const cardVariants = cva(
   "rounded-[20px] overflow-hidden transition-[background-color,border-color,box-shadow] duration-200 ease-out",

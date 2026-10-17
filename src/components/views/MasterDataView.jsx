@@ -20,8 +20,9 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { masterData, formatNumber } from "../../lib";
+import { useAppConfig } from "../../providers/AppProvider";
+import { masterData } from "@/lib/dummyData";
+import { formatNumber } from "@/lib/utils/utils";
 
 export default function MasterDataView({ lang: propLang }) {
   const { lang: contextLang } = useAppConfig();

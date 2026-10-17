@@ -13,14 +13,42 @@ import {
   SegmentedControl,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { dashboardData, formatNumber } from "../../lib";
+import { useAppConfig } from "../../providers/AppProvider";
+import { dashboardData } from "@/lib/dummyData";
+import { formatNumber } from "@/lib/utils/utils";
+import { useRealtimeInventory } from "@/lib/hooks/useRealtimeInventory";
 
 export default function DashboardView({ lang: propLang }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
   const [chartRange, setChartRange] = useState("7d");
   const { kpis, pergerakanStokChart, aktivitasTerbaru } = dashboardData;
+  const { items: realtimeItems, isLive } = useRealtimeInventory();
+
+  // Hitung KPI secara realtime jika data Firestore aktif
+  const computedKpis = React.useMemo(() => {
+    if (!realtimeItems || realtimeItems.length === 0) {
+      return kpis;
+    }
+
+    const liveTotalStok = realtimeItems.reduce((acc, item) => acc + (item.totalStock || 0), 0);
+    const liveAvailable = realtimeItems.reduce((acc, item) => acc + (item.availableStock || 0), 0);
+    const liveReserved = realtimeItems.reduce((acc, item) => acc + (item.reservedStock || 0), 0);
+    const liveDamaged = realtimeItems.reduce((acc, item) => acc + (item.damagedStock || 0), 0);
+    const liveMenipis = realtimeItems.filter((item) =>
+      item.statusKesehatan?.includes("Kritis") || item.statusKesehatan?.includes("Menipis")
+    ).length;
+
+    return {
+      ...kpis,
+      totalProduk: realtimeItems.length,
+      totalStok: liveTotalStok,
+      availableStock: liveAvailable,
+      reservedStock: liveReserved,
+      damagedStock: liveDamaged,
+      stokMenipis: liveMenipis,
+    };
+  }, [realtimeItems, kpis]);
 
   const maxVal = Math.max(...pergerakanStokChart.map((d) => Math.max(d.incoming, d.outgoing)));
 
@@ -33,8 +61,8 @@ export default function DashboardView({ lang: propLang }) {
             <h2 className="text-2xl font-black tracking-tight text-black-primary">
               {lang === "id" ? "Dashboard Monitoring" : "Monitoring Dashboard"}
             </h2>
-            <Badge variant="yellow" dot size="sm">
-              Live Sync
+            <Badge variant={isLive ? "yellow" : "neutral"} dot size="sm">
+              {isLive ? "● Firestore Live Sync" : "Local Sync"}
             </Badge>
           </div>
           <p className="text-xs text-text-secondary mt-0.5">
@@ -69,7 +97,7 @@ export default function DashboardView({ lang: propLang }) {
             </div>
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl font-black tracking-tight text-black-primary font-mono">
-                {kpis.totalProduk}
+                {computedKpis.totalProduk}
               </span>
               <span className="text-xs text-text-muted">SKU Terdaftar</span>
             </div>
@@ -117,7 +145,7 @@ export default function DashboardView({ lang: propLang }) {
             </div>
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl font-black tracking-tight text-black-primary font-mono">
-                {formatNumber(kpis.totalStok)}
+                {formatNumber(computedKpis.totalStok)}
               </span>
               <span className="text-xs text-text-muted">Pcs Unit</span>
             </div>
@@ -141,24 +169,24 @@ export default function DashboardView({ lang: propLang }) {
             </CardDescription>
           </div>
           <span className="text-xs font-mono text-text-muted">
-            Total Unit: {formatNumber(kpis.totalStok)} Pcs
+            Total Unit: {formatNumber(computedKpis.totalStok)} Pcs
           </span>
         </CardHeader>
         <CardContent>
           {/* Visual Multi-Color Segmented Bar */}
           <div className="w-full h-3 rounded-full overflow-hidden flex bg-surface-muted border border-border-subtle">
             <div
-              style={{ width: `${(kpis.availableStock / kpis.totalStok) * 100}%` }}
+              style={{ width: `${(computedKpis.availableStock / (computedKpis.totalStok || 1)) * 100}%` }}
               className="bg-accent-yellow transition-[width] duration-300 ease-[var(--ease-out)]"
               title="Available Stock"
             />
             <div
-              style={{ width: `${(kpis.reservedStock / kpis.totalStok) * 100}%` }}
+              style={{ width: `${(computedKpis.reservedStock / (computedKpis.totalStok || 1)) * 100}%` }}
               className="bg-punch-black transition-[width] duration-300 ease-[var(--ease-out)]"
               title="Reserved Stock"
             />
             <div
-              style={{ width: `${(kpis.damagedStock / kpis.totalStok) * 100}%` }}
+              style={{ width: `${(computedKpis.damagedStock / (computedKpis.totalStok || 1)) * 100}%` }}
               className="bg-accent-red transition-[width] duration-300 ease-[var(--ease-out)]"
               title="Damaged Stock"
             />
@@ -177,7 +205,7 @@ export default function DashboardView({ lang: propLang }) {
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black font-mono text-black-primary">
-                  {formatNumber(kpis.availableStock)}
+                  {formatNumber(computedKpis.availableStock)}
                   <span className="text-xs font-normal text-text-muted ml-1">pcs</span>
                 </div>
                 <p className="text-[11px] text-text-secondary mt-1">
@@ -197,7 +225,7 @@ export default function DashboardView({ lang: propLang }) {
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black font-mono text-black-primary">
-                  {formatNumber(kpis.reservedStock)}
+                  {formatNumber(computedKpis.reservedStock)}
                   <span className="text-xs font-normal text-text-muted ml-1">pcs</span>
                 </div>
                 <p className="text-[11px] text-text-secondary mt-1">
@@ -217,7 +245,7 @@ export default function DashboardView({ lang: propLang }) {
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black font-mono text-accent-red">
-                  {formatNumber(kpis.damagedStock)}
+                  {formatNumber(computedKpis.damagedStock)}
                   <span className="text-xs font-normal text-text-muted ml-1">pcs</span>
                 </div>
                 <p className="text-[11px] text-text-secondary mt-1">
@@ -239,7 +267,7 @@ export default function DashboardView({ lang: propLang }) {
                 Peringatan Buffer
               </div>
               <div className="text-xl font-black text-black-primary mt-1">
-                {kpis.stokMenipis} SKU Menipis
+                {computedKpis.stokMenipis} SKU Menipis
               </div>
               <p className="text-xs text-text-secondary mt-0.5">
                 Di bawah batas minimum buffer gudang

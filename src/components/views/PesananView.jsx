@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardFooter,
   Button,
   Badge,
-  SegmentedControl,
   Table,
   TableHeader,
   TableBody,
@@ -19,20 +18,16 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { pesananData } from "../../lib/dummyData";
+import { useAppConfig } from "../../providers/AppProvider";
+import { pesananData } from "@/lib/dummyData";
 
-export default function PesananView({ lang: propLang }) {
+export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
-  const [activeTab, setActiveTab] = useState("daftar");
+  const [userTab, setUserTab] = useState(null);
+  const activeTab = userTab || initialTab;
+  const setActiveTab = setUserTab;
   const { daftarPesanan, fulfillmentStages, riwayatPesanan } = pesananData;
-
-  const tabOptions = [
-    { value: "daftar", label: lang === "id" ? "Daftar Pesanan" : "Orders List", icon: Icons.Orders },
-    { value: "fulfillment", label: lang === "id" ? "Proses Fulfillment" : "Fulfillment Pipeline", icon: Icons.PipelineFulfillment },
-    { value: "riwayat", label: lang === "id" ? "Riwayat Pesanan" : "Order History", icon: Icons.OrderHistory },
-  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,13 +58,6 @@ export default function PesananView({ lang: propLang }) {
           </Button>
         </div>
       </div>
-
-      {/* Tabs */}
-      <SegmentedControl
-        value={activeTab}
-        onChange={setActiveTab}
-        options={tabOptions}
-      />
 
       {/* TAB 1: DAFTAR PESANAN */}
       {activeTab === "daftar" && (
@@ -130,8 +118,8 @@ export default function PesananView({ lang: propLang }) {
                           item.status === "Completed"
                             ? "neutral"
                             : item.status === "Waiting Fulfillment" || item.status === "Picking" || item.status === "Packing"
-                            ? "yellow"
-                            : "neutral"
+                              ? "yellow"
+                              : "neutral"
                         }
                         dot={item.status !== "Completed"}
                         size="sm"

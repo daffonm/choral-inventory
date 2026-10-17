@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardFooter,
   Button,
   Badge,
-  SegmentedControl,
   Table,
   TableHeader,
   TableBody,
@@ -19,20 +18,16 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { barangMasukData } from "../../lib/dummyData";
+import { useAppConfig } from "../../providers/AppProvider";
+import { barangMasukData } from "@/lib/dummyData";
 
-export default function BarangMasukView({ lang: propLang }) {
+export default function BarangMasukView({ lang: propLang, initialTab = "supplier" }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
-  const [activeTab, setActiveTab] = useState("supplier");
+  const [userTab, setUserTab] = useState(null);
+  const activeTab = userTab || initialTab;
+  const setActiveTab = setUserTab;
   const { penerimaanSupplier, hasilProduksi, barangRetur } = barangMasukData;
-
-  const tabOptions = [
-    { value: "supplier", label: lang === "id" ? "Penerimaan Supplier" : "Supplier Receipts", icon: Icons.Inbound },
-    { value: "produksi", label: lang === "id" ? "Hasil Produksi" : "Production Inbound", icon: Icons.Manufacturing },
-    { value: "retur", label: lang === "id" ? "Barang Retur" : "Return Orders", icon: Icons.ReturnOrder },
-  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,13 +58,6 @@ export default function BarangMasukView({ lang: propLang }) {
           </Button>
         </div>
       </div>
-
-      {/* Tabs */}
-      <SegmentedControl
-        value={activeTab}
-        onChange={setActiveTab}
-        options={tabOptions}
-      />
 
       {/* TAB 1: PENERIMAAN SUPPLIER */}
       {activeTab === "supplier" && (

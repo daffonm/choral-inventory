@@ -1,7 +1,7 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 /**
  * Reusable Progress component following shadcn architecture and Emil Kowalski motion laws:

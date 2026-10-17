@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardFooter,
   Button,
   Badge,
-  SegmentedControl,
   Table,
   TableHeader,
   TableBody,
@@ -19,22 +18,22 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { persediaanData, formatNumber } from "../../lib";
+import { useAppConfig } from "../../providers/AppProvider";
+import { persediaanData } from "@/lib/dummyData";
+import { formatNumber } from "@/lib/utils/utils";
+import { useRealtimeInventory } from "@/lib/hooks/useRealtimeInventory";
 
-export default function PersediaanView({ lang: propLang }) {
+export default function PersediaanView({ lang: propLang, initialTab = "stokSaatIni" }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
-  const [activeTab, setActiveTab] = useState("stokSaatIni");
-  const { stokSaatIni, pergerakanStok, alokasiStok, stockOpname, stokMinimum } = persediaanData;
+  const [userTab, setUserTab] = useState(null);
+  const activeTab = userTab || initialTab;
+  const setActiveTab = setUserTab;
+  const { stokSaatIni: dummyStokSaatIni, pergerakanStok, alokasiStok, stockOpname, stokMinimum } = persediaanData;
+  const { items: realtimeItems, loading: isRealtimeLoading, isLive } = useRealtimeInventory();
 
-  const tabOptions = [
-    { value: "stokSaatIni", label: lang === "id" ? "Stok Saat Ini" : "Current Stock", icon: Icons.Package },
-    { value: "pergerakan", label: lang === "id" ? "Pergerakan Stok" : "Stock Movement", icon: Icons.MovementLedger },
-    { value: "alokasi", label: lang === "id" ? "Alokasi Stok" : "Channel Allocation", icon: Icons.AllocationPool },
-    { value: "opname", label: lang === "id" ? "Stock Opname" : "Stock Audit", icon: Icons.StockOpname },
-    { value: "minimum", label: lang === "id" ? "Stok Minimum" : "Buffer Alerts", icon: Icons.AlertBuffer },
-  ];
+  // Gunakan data realtime Firestore jika tersedia, atau fallback ke dummy data
+  const stokSaatIni = realtimeItems && realtimeItems.length > 0 ? realtimeItems : dummyStokSaatIni;
 
   return (
     <div className="flex flex-col gap-6">
@@ -66,13 +65,6 @@ export default function PersediaanView({ lang: propLang }) {
         </div>
       </div>
 
-      {/* Tabs */}
-      <SegmentedControl
-        value={activeTab}
-        onChange={setActiveTab}
-        options={tabOptions}
-      />
-
       {/* TAB 1: STOK SAAT INI */}
       {activeTab === "stokSaatIni" && (
         <Card>
@@ -81,17 +73,21 @@ export default function PersediaanView({ lang: propLang }) {
               <CardTitle>{lang === "id" ? "Stok Saat Ini (Per SKU)" : "Current Stock On-Hand"}</CardTitle>
               <CardDescription>
                 {lang === "id"
-                  ? "Atribut: SKU, total stock, available stock, reserved stock, damaged stock"
-                  : "Attributes: SKU, total stock, available stock, reserved stock, damaged stock"}
+                  ? "Atribut: SKU, barcode, total stock, available stock, reserved stock, damaged stock"
+                  : "Attributes: SKU, barcode, total stock, available stock, reserved stock, damaged stock"}
               </CardDescription>
             </div>
-            <Badge variant="yellow" size="sm">Real-time Stock</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant={isLive ? "yellow" : "neutral"} size="sm" dot>
+                {isLive ? "● Firestore Realtime Active" : "Local Store Dataset"}
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>SKU</TableHead>
+                  <TableHead>SKU / Barcode</TableHead>
                   <TableHead>Nama Produk</TableHead>
                   <TableHead>Lokasi Gudang</TableHead>
                   <TableHead className="text-right">Total Stock</TableHead>
@@ -105,7 +101,12 @@ export default function PersediaanView({ lang: propLang }) {
                 {stokSaatIni.map((item) => (
                   <TableRow key={item.sku}>
                     <TableCell className="font-mono font-bold text-black-primary">
-                      {item.sku}
+                      <div>{item.sku}</div>
+                      {item.barcode && (
+                        <div className="text-[10px] text-text-muted font-normal tracking-wider font-mono">
+                          {item.barcode}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="font-semibold text-black-primary">
                       {item.namaProduk}
@@ -127,11 +128,11 @@ export default function PersediaanView({ lang: propLang }) {
                     </TableCell>
                     <TableCell className="text-right">
                       <Badge
-                        variant={item.statusKesehatan.includes("Kritis") ? "red" : "yellow"}
+                        variant={item.statusKesehatan?.includes("Kritis") ? "red" : "yellow"}
                         dot
                         size="sm"
                       >
-                        {item.statusKesehatan}
+                        {item.statusKesehatan || "Aman"}
                       </Badge>
                     </TableCell>
                   </TableRow>
@@ -183,8 +184,8 @@ export default function PersediaanView({ lang: propLang }) {
                           item.transactionType.includes("Incoming")
                             ? "yellow"
                             : item.transactionType.includes("Damaged")
-                            ? "red"
-                            : "neutral"
+                              ? "red"
+                              : "neutral"
                         }
                         size="sm"
                       >

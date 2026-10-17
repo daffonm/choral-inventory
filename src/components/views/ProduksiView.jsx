@@ -20,8 +20,8 @@ import {
   TableCell,
   Icons,
 } from "../ui";
-import { useAppConfig } from "../providers/AppProvider";
-import { produksiData } from "../../lib/dummyData";
+import { useAppConfig } from "../../providers/AppProvider";
+import { produksiData } from "@/lib/dummyData";
 
 export default function ProduksiView({ lang: propLang }) {
   const { lang: contextLang } = useAppConfig();
@@ -128,8 +128,8 @@ export default function ProduksiView({ lang: propLang }) {
                           item.status.includes("Completed")
                             ? "neutral"
                             : item.status.includes("Running")
-                            ? "yellow"
-                            : "neutral"
+                              ? "yellow"
+                              : "neutral"
                         }
                         dot={item.status.includes("Running")}
                         size="sm"
@@ -240,8 +240,8 @@ export default function ProduksiView({ lang: propLang }) {
                           item.status === "Passed"
                             ? "yellow"
                             : item.status === "Failed"
-                            ? "red"
-                            : "neutral"
+                              ? "red"
+                              : "neutral"
                         }
                         dot
                         size="sm"

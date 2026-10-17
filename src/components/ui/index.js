@@ -34,3 +34,4 @@ export {
   EmptyState,
 } from "./Skeleton";
 export { Spinner, LoadingState, spinnerVariants } from "./Spinner";
+export { ScrollArea, ScrollBar } from "./ScrollArea";

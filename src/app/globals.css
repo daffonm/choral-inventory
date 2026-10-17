@@ -195,6 +195,20 @@ body {
 }
 
 /* ==========================================================================
+   SCROLLBAR UTILITIES (Clean Views without default browser scrollbar)
+   ========================================================================== */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* ==========================================================================
    APPLE DESIGN & NEON CYBER PUNCH EFFECTS
    ========================================================================== */
 

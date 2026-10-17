@@ -14,6 +14,7 @@ import {
   Icons,
   Skeleton,
   EmptyState,
+  ScrollArea,
 } from "../ui";
 import { useAppConfig } from "../../providers/AppProvider";
 import { formatNumber } from "@/lib/utils/utils";
@@ -513,27 +514,29 @@ export default function DashboardView({ lang: propLang }) {
                 className="py-8"
               />
             ) : (
-              <div className="divide-y divide-border-subtle max-h-[380px] overflow-y-auto">
-                {aktivitasTerbaru.map((act) => (
-                  <div key={act.id} className="p-4 hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="text-xs font-bold text-black-primary">
-                        {act.title}
-                      </span>
-                      <Badge variant={act.badgeVariant || "neutral"} size="sm">
-                        {act.type}
-                      </Badge>
+              <ScrollArea className="h-[380px]">
+                <div className="divide-y divide-border-subtle pr-3">
+                  {aktivitasTerbaru.map((act) => (
+                    <div key={act.id} className="p-4 hover:bg-surface-hover/60 transition-[background-color] duration-150 ease-out">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-xs font-bold text-black-primary">
+                          {act.title}
+                        </span>
+                        <Badge variant={act.badgeVariant || "neutral"} size="sm">
+                          {act.type}
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-text-secondary mt-1 line-clamp-2">
+                        {act.description}
+                      </p>
+                      <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted font-mono">
+                        <span>{act.user}</span>
+                        <span>{act.timestamp}</span>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-text-secondary mt-1 line-clamp-2">
-                      {act.description}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted font-mono">
-                      <span>{act.user}</span>
-                      <span>{act.timestamp}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </ScrollArea>
             )}
           </CardContent>
 

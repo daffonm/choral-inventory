@@ -11,12 +11,12 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase-client";
-import { persediaanData } from "../dummyData";
+import { seedInventoryData } from "./seeder-service";
 
 /**
  * Modular Batch Importer:
  * Menerima array data inventaris dan menyimpannya ke Firestore secara batch.
- * Fungsi ini dirancang modular: bisa menerima data dari dummyData saat ini,
+ * Fungsi ini dirancang modular: bisa menerima data hasil parsing file XLSX / CSV atau input UI.
  * maupun menerima data hasil parsing file XLSX / CSV di masa depan.
  * 
  * @param {Array<Object>} records - Array of inventory records
@@ -113,20 +113,7 @@ function generateBarcodeForSku(sku, index = 0) {
  * Seeder untuk migrasi data awal dari dummyData.js ke Firestore
  */
 export async function seedInventoryFromDummy() {
-  const dummyItems = persediaanData.stokSaatIni || [];
-  const minStockMap = {};
-
-  (persediaanData.stokMinimum || []).forEach((m) => {
-    minStockMap[m.sku] = parseInt(m.stokMinimum, 10);
-  });
-
-  const formattedRecords = dummyItems.map((item, idx) => ({
-    ...item,
-    minimumStock: minStockMap[item.sku] || 20,
-    barcode: generateBarcodeForSku(item.sku, idx),
-  }));
-
-  return await importInventoryRecords(formattedRecords, { merge: true });
+  return await seedInventoryData();
 }
 
 /**

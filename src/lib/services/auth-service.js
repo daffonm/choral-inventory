@@ -1,5 +1,6 @@
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut as fbSignOut,
   onAuthStateChanged,
   setPersistence,
@@ -22,11 +23,30 @@ export async function loginUser(email, password, keepSignedIn = false) {
     // Set persistensi sesi sebelum sign-in
     await setPersistence(auth, persistence);
 
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return {
-      success: true,
-      user: userCredential.user,
-    };
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return {
+        success: true,
+        user: userCredential.user,
+      };
+    } catch (signInErr) {
+      if (
+        signInErr.code === "auth/user-not-found" ||
+        signInErr.code === "auth/invalid-credential"
+      ) {
+        // Coba otomatis registrasi untuk inisialisasi akun jika belum terdaftar di Firebase
+        try {
+          const newCred = await createUserWithEmailAndPassword(auth, email, password);
+          return {
+            success: true,
+            user: newCred.user,
+          };
+        } catch {
+          throw signInErr;
+        }
+      }
+      throw signInErr;
+    }
   } catch (error) {
     console.error("Firebase Login Error:", error);
     return {

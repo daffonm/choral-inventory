@@ -6,40 +6,69 @@ service cloud.firestore {
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    // Helper function: Validasi integritas data persediaan
-    function isValidInventoryItem() {
-      let data = request.resource.data;
-      return data.sku is string && data.sku.size() > 0
-          && data.namaProduk is string && data.namaProduk.size() > 0
-          && data.totalStock is int && data.totalStock >= 0
-          && data.availableStock is int && data.availableStock >= 0;
-    }
 
     // 1. Koleksi Inventaris & Persediaan
     match /inventory/{itemId} {
-      // Hanya pengguna yang sudah login yang bisa membaca data stok
       allow read: if isAuthenticated();
-      
-      // Tambah & edit stok wajib tervalidasi dan dilakukan oleh user terautentikasi
-      allow create, update: if isAuthenticated() && isValidInventoryItem();
-      
-      // Hapus barang hanya diizinkan untuk akun terotentikasi internal
-      allow delete: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
     }
 
     // 2. Koleksi Mutasi & Pergerakan Stok (Audit Trail)
     match /stock_movements/{movementId} {
       allow read: if isAuthenticated();
-      // Boleh dicatat saat ada transaksi
-      allow create: if isAuthenticated() 
-                    && request.resource.data.quantity is int
-                    && request.resource.data.sku is string;
+      allow create: if isAuthenticated();
       // Mutasi bersifat immutable: dilarang edit atau hapus riwayat audit log
       allow update, delete: if false;
     }
 
-    // Default deny untuk koleksi lainnya demi keamanan
+    // 3. Koleksi Stock Opname & Audit Fisik
+    match /stock_opname/{opnameId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 4. Koleksi Master Data
+    match /master_products/{id} {
+      allow read, write: if isAuthenticated();
+    }
+    match /master_materials/{id} {
+      allow read, write: if isAuthenticated();
+    }
+    match /master_suppliers/{id} {
+      allow read, write: if isAuthenticated();
+    }
+    match /master_warehouses/{id} {
+      allow read, write: if isAuthenticated();
+    }
+    match /master_channels/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 5. Koleksi Barang Masuk (Inbound)
+    match /incoming_goods/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 6. Koleksi Produksi & Manufaktur
+    match /production_orders/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 7. Koleksi Pesanan & Fulfillment (Outbound)
+    match /orders/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 8. Koleksi Transaksi & Mutasi Pengeluaran
+    match /transactions/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 9. Koleksi Aktivitas Sistem & Log Operasional
+    match /activities/{id} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Default deny untuk koleksi luar lainnya demi keamanan
     match /{document=**} {
       allow read, write: if false;
     }

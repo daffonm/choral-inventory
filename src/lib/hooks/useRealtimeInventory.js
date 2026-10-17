@@ -3,16 +3,15 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase/firebase-client";
-import { persediaanData } from "../dummyData";
 
 /**
  * Custom React Hook untuk mendengarkan perubahan koleksi `inventory` di Firestore secara realtime.
- * - Mengembalikan data live dengan latensi nol via onSnapshot
- * - Secara transparan fallback ke dummyData jika koleksi di Firestore masih kosong
+ * - Latensi nol via Firestore onSnapshot
+ * - Mengembalikan array bersih [] ketika Firestore kosong (tidak ada fallback dummy data)
  * - Otomatis melakukan unsubscribe saat unmount untuk mencegah memory leak
  */
 export function useRealtimeInventory() {
-  const [items, setItems] = useState(() => persediaanData.stokSaatIni || []);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLive, setIsLive] = useState(false);
@@ -32,16 +31,14 @@ export function useRealtimeInventory() {
               ...doc.data(),
             }));
             setItems(data);
-            setIsLive(true);
           } else {
-            // Fallback halus ke dummyData jika database belum di-seed
-            setItems(persediaanData.stokSaatIni || []);
-            setIsLive(false);
+            setItems([]);
           }
+          setIsLive(true);
           setLoading(false);
         },
         (err) => {
-          console.warn("Firestore onSnapshot warning (fallback ke local):", err);
+          console.warn("Firestore onSnapshot error:", err);
           setError(err);
           setIsLive(false);
           setLoading(false);
@@ -49,6 +46,9 @@ export function useRealtimeInventory() {
       );
     } catch (e) {
       console.warn("Gagal inisialisasi onSnapshot listener:", e);
+      queueMicrotask(() => {
+        setLoading(false);
+      });
     }
 
     return () => {
@@ -60,3 +60,5 @@ export function useRealtimeInventory() {
 
   return { items, loading, error, isLive };
 }
+
+export default useRealtimeInventory;

@@ -1,4 +1,4 @@
-import { BarangMasukView } from "@/components/views";
+import BarangMasukView from "@/components/views/BarangMasuk/BarangMasukView";
 
 export const metadata = {
   title: "Penerimaan Supplier | CHORAL.ID Inbound",

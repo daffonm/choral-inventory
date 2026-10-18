@@ -1,4 +1,4 @@
-import { PesananView } from "@/components/views";
+import PesananView from "@/components/views/Pesanan/PesananView";
 
 export const metadata = {
   title: "Riwayat Pesanan | CHORAL.ID Outbound",

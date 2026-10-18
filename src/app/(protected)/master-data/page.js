@@ -1,4 +1,4 @@
-import { MasterDataView } from "@/components/views";
+import MasterDataView from "@/components/views/MasterData/MasterDataView";
 
 export const metadata = {
   title: "Master Data | CHORAL.ID Inventory",

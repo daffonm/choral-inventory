@@ -1,4 +1,4 @@
-import { PersediaanView } from "@/components/views";
+import PersediaanView from "@/components/views/Persediaan/PersediaanView";
 
 export const metadata = {
   title: "Stok Saat Ini | CHORAL.ID Inventory",

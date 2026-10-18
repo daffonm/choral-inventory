@@ -58,11 +58,16 @@
   /* ==========================================================================
      CYBER YELLOW SYSTEM (~10% Weight: Primary High-Impact CTA & Active States)
      ========================================================================== */
-  --accent-yellow: #FFD000;           /* Cyber yellow primary CTA & action color */
-  --accent-yellow-hover: #E6BC00;     /* Yellow hover state */
-  --accent-yellow-surface: #FFF9D6;   /* Yellow badge & highlighted surface */
-  --accent-yellow-border: #FCE166;    /* Yellow badge border */
-  --text-on-yellow: #121212;          /* High contrast dark text on yellow CTA */
+  --accent-yellow: #FFD000;
+  /* Cyber yellow primary CTA & action color */
+  --accent-yellow-hover: #E6BC00;
+  /* Yellow hover state */
+  --accent-yellow-surface: #FFF9D6;
+  /* Yellow badge & highlighted surface */
+  --accent-yellow-border: #FCE166;
+  /* Yellow badge border */
+  --text-on-yellow: #121212;
+  /* High contrast dark text on yellow CTA */
 
   /* Dedicated CTA Tokens */
   --cta-bg: var(--accent-yellow);
@@ -72,19 +77,28 @@
   /* ==========================================================================
      EMIL KOWALSKI CRAFT & EASING TOKENS
      ========================================================================== */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);       /* Strong punchy ease-out for responsive UI */
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);   /* Natural on-screen movement */
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);    /* iOS-like drawer / sheet curve */
-  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);    /* Smooth settling spring */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Strong punchy ease-out for responsive UI */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  /* Natural on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* iOS-like drawer / sheet curve */
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Smooth settling spring */
 
   /* ==========================================================================
      CYBER RED SYSTEM (~5% Weight: Urgent Alerts, Critical Stockout & Punches)
      ========================================================================== */
-  --accent-red: #FF0022;              /* Cyber red urgent focal & alert accent */
-  --accent-red-hover: #D9001D;        /* Red hover state */
-  --accent-red-surface: #FFE8EB;      /* Red alert badge & soft pill surface */
-  --accent-red-border: #FFA8B3;       /* Red alert border */
-  --text-on-red: #FFFFFF;             /* White text on red elements */
+  --accent-red: #FF0022;
+  /* Cyber red urgent focal & alert accent */
+  --accent-red-hover: #D9001D;
+  /* Red hover state */
+  --accent-red-surface: #FFE8EB;
+  /* Red alert badge & soft pill surface */
+  --accent-red-border: #FFA8B3;
+  /* Red alert border */
+  --text-on-red: #FFFFFF;
+  /* White text on red elements */
 
   /* Semantic Core Defaults */
   --background: var(--surface-canvas);
@@ -99,26 +113,40 @@
    ========================================================================== */
 html[data-theme="dark"],
 .dark {
-  --surface-canvas: #121214;          /* Deep dark canvas background */
-  --surface-card: #18181B;            /* Elevated card background */
-  --surface-card-subtle: #202024;     /* Secondary container / grouped row */
-  --surface-muted: #27272A;           /* Input background, pill backgrounds */
-  --surface-elevated: #222226;        /* Modals and popovers */
-  --surface-hover: #2A2A30;           /* List/row hover state */
+  --surface-canvas: #121214;
+  /* Deep dark canvas background */
+  --surface-card: #18181B;
+  /* Elevated card background */
+  --surface-card-subtle: #202024;
+  /* Secondary container / grouped row */
+  --surface-muted: #27272A;
+  /* Input background, pill backgrounds */
+  --surface-elevated: #222226;
+  /* Modals and popovers */
+  --surface-hover: #2A2A30;
+  /* List/row hover state */
 
-  --border-subtle: #27272A;           /* Subtle dark hairline divider */
-  --border-default: #333338;          /* Standard dark input border */
-  --border-strong: #4B4B54;           /* Emphasized dark borders */
+  --border-subtle: #27272A;
+  /* Subtle dark hairline divider */
+  --border-default: #333338;
+  /* Standard dark input border */
+  --border-strong: #4B4B54;
+  /* Emphasized dark borders */
 
-  --black-primary: #FFFFFF;           /* Headings become crisp white in dark mode */
+  --black-primary: #FFFFFF;
+  /* Headings become crisp white in dark mode */
   --black-surface: #121214;
   --black-subtle: #27272A;
   --black-hover: #1E1E22;
 
-  --text-primary: #F4F4F6;            /* Primary light text */
-  --text-secondary: #A1A1AA;          /* Secondary descriptive text */
-  --text-muted: #71717A;              /* Muted text */
-  --text-inverse: #121214;            /* Inverted text */
+  --text-primary: #F4F4F6;
+  /* Primary light text */
+  --text-secondary: #A1A1AA;
+  /* Secondary descriptive text */
+  --text-muted: #71717A;
+  /* Muted text */
+  --text-inverse: #121214;
+  /* Inverted text */
 
   --background: var(--surface-canvas);
   --foreground: var(--text-primary);
@@ -204,8 +232,10 @@ body {
 
 .no-scrollbar,
 .scrollbar-none {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* ==========================================================================
@@ -279,6 +309,20 @@ body {
   box-shadow: 0 0 8px 1px rgba(255, 208, 0, 0.35);
 }
 
+/* Full rounded neon glow for closed sidebar - Subdued & refined ambient glow */
+.neon-selected-glow.rounded-full,
+.rounded-full.neon-selected-glow {
+  background: radial-gradient(circle at center, rgba(255, 208, 0, 0.08) 0%, rgba(255, 208, 0, 0.02) 75%, transparent 100%), rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 208, 0, 0.25) !important;
+  box-shadow: 0 0 8px 0px rgba(255, 208, 0, 0.18), inset 0 0 4px rgba(255, 208, 0, 0.08) !important;
+}
+
+.neon-selected-glow.rounded-full::after,
+.rounded-full.neon-selected-glow::after {
+  display: none !important;
+}
+
+
 /* Neon Pro CTA Button */
 .neon-pro-cta {
   background: linear-gradient(135deg, #FFD000 0%, #FFC000 60%, #E6AC00 100%);
@@ -301,11 +345,12 @@ body {
 /* 5% Punch Red Notification Badge */
 .neon-alert-dot {
   background-color: var(--accent-red);
-  box-shadow: 0 0 10px 1px rgba(255, 0, 34, 0.75);
+  box-shadow: 0 0 6px 1px rgba(255, 0, 34, 0.7);
 }
 
 /* Reduced Motion Respect */
 @media (prefers-reduced-motion: reduce) {
+
   .apple-press,
   .sliding-neon-indicator,
   .neon-pro-cta {
@@ -313,4 +358,36 @@ body {
     animation: none !important;
     transform: none !important;
   }
+}
+/* Master Data View Slide Transitions (Apple / Emil Kowalski Spring & Drawer) */
+@keyframes viewSlideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes viewSlideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-view-slide-in-right {
+  animation: viewSlideInFromRight 320ms var(--ease-drawer) both;
+  will-change: transform, opacity;
+}
+
+.animate-view-slide-in-left {
+  animation: viewSlideInFromLeft 320ms var(--ease-drawer) both;
+  will-change: transform, opacity;
 }

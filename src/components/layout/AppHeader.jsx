@@ -58,7 +58,7 @@ export default function AppHeader({ className, containerClassName }) {
       <div
         data-slot="app-header-container"
         className={cn(
-          "max-w-6xl w-full mx-auto h-full px-6 sm:px-8 flex items-center justify-between gap-4",
+          "w-full h-full px-4 sm:px-6 flex items-center justify-between gap-4",
           containerClassName
         )}
       >

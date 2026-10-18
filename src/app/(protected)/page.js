@@ -1,4 +1,4 @@
-import { DashboardView } from "@/components/views";
+import DashboardView from "@/components/views/Dashboard/DashboardView";
 
 export const metadata = {
   title: "Dashboard Monitoring | CHORAL.ID Inventory",

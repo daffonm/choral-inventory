@@ -36,10 +36,10 @@ export function useAppConfig() {
     // Return fallback defaults if used outside provider
     return {
       lang: "id",
-      setLang: () => {},
+      setLang: () => { },
       theme: "dark",
-      setTheme: () => {},
-      toggleTheme: () => {},
+      setTheme: () => { },
+      toggleTheme: () => { },
     };
   }
   return context;

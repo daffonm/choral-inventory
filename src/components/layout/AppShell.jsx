@@ -16,7 +16,7 @@ export default function AppShell({ children }) {
 
       <main className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar bg-surface-canvas transition-colors duration-200">
         <AppHeader />
-        <div className="p-6 sm:p-8 max-w-6xl w-full mx-auto flex-1">
+        <div className="w-full px-4 sm:px-6 py-5 sm:py-6 flex-1">
           {children}
         </div>
       </main>

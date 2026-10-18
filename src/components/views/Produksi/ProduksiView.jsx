@@ -21,8 +21,8 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
 
 export default function ProduksiView({ lang: propLang }) {
@@ -404,3 +404,5 @@ export default function ProduksiView({ lang: propLang }) {
     </div>
   );
 }
+
+export { ProduksiView };

@@ -19,8 +19,8 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
 
 export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
@@ -313,3 +313,5 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
     </div>
   );
 }
+
+export { PesananView };

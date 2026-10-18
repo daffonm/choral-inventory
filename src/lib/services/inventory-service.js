@@ -190,3 +190,112 @@ export async function recordStockMovement({
     };
   }
 }
+
+/**
+ * Membuat master produk baru dan menyinkronkannya ke master_products, inventory, dan log activities
+ * @param {Object} productData
+ * @returns {Promise<{ success: boolean, sku?: string, error?: string }>}
+ */
+export async function createMasterProduct(productData) {
+  if (!productData || !productData.sku || !productData.namaProduk) {
+    return {
+      success: false,
+      error: "SKU dan Nama Produk wajib diisi.",
+    };
+  }
+
+  const userEmail = auth.currentUser?.email || "Staf Gudang";
+  const sku = String(productData.sku).trim().toUpperCase();
+  const currentStock = parseInt(productData.currentStock || 0, 10);
+  const minStock = parseInt(productData.minStock || 20, 10);
+  const price = parseInt(productData.price || 0, 10);
+  const hpp = parseInt(productData.hpp || 0, 10);
+
+  // Status kesehatan inventaris
+  let statusKesehatan = "Aman";
+  if (currentStock <= minStock / 2) {
+    statusKesehatan = "Kritis / Menipis";
+  } else if (currentStock <= minStock) {
+    statusKesehatan = "Peringatan Menipis";
+  }
+
+  const productPayload = {
+    sku,
+    namaProduk: String(productData.namaProduk).trim(),
+    kategori: productData.kategori || "Tactical Bags",
+    variant: productData.variant || "Standard",
+    size: productData.size || "All Size",
+    color: productData.color || "Black",
+    barcode: productData.barcode || `899${Date.now().toString().slice(-10)}`,
+    satuan: productData.satuan || "Pcs",
+    jenisBarang: productData.jenisBarang || "Produk Jadi",
+    price,
+    hpp,
+    currentStock,
+    minStock,
+    lokasiGudang: productData.lokasiGudang || "Gudang Utama (Rack A1)",
+    deskripsi: productData.deskripsi || "",
+    fotoUrl: productData.fotoUrl || "",
+    status: productData.status || "Aktif",
+    createdAt: serverTimestamp(),
+    createdBy: userEmail,
+    updatedAt: serverTimestamp(),
+  };
+
+  const inventoryPayload = {
+    sku,
+    barcode: productPayload.barcode,
+    namaProduk: productPayload.namaProduk,
+    totalStock: currentStock,
+    availableStock: currentStock,
+    reservedStock: 0,
+    damagedStock: 0,
+    minimumStock: minStock,
+    lokasiGudang: productPayload.lokasiGudang,
+    statusKesehatan,
+    kategori: productPayload.kategori,
+    fotoUrl: productPayload.fotoUrl,
+    updatedAt: serverTimestamp(),
+    updatedBy: userEmail,
+  };
+
+  const activityPayload = {
+    id: `ACT-${Date.now()}`,
+    type: "product",
+    title: "Master Produk Baru Ditambahkan",
+    description: `SKU ${sku} (${productPayload.namaProduk}) berhasil ditambahkan ke katalog master.`,
+    timestamp: serverTimestamp(),
+    user: userEmail,
+    badgeVariant: "yellow",
+  };
+
+  try {
+    const batch = writeBatch(db);
+
+    // 1. Simpan ke master_products
+    const masterDocRef = doc(collection(db, "master_products"), sku);
+    batch.set(masterDocRef, productPayload, { merge: true });
+
+    // 2. Sinkronkan ke koleksi inventory
+    const inventoryDocRef = doc(collection(db, "inventory"), sku);
+    batch.set(inventoryDocRef, inventoryPayload, { merge: true });
+
+    // 3. Catat aktivitas audit
+    const activityDocRef = doc(collection(db, "activities"));
+    batch.set(activityDocRef, activityPayload);
+
+    await batch.commit();
+
+    return {
+      success: true,
+      sku,
+    };
+  } catch (error) {
+    console.error("createMasterProduct error:", error);
+    return {
+      success: false,
+      error: error.message || "Gagal menyimpan master produk ke Firestore.",
+    };
+  }
+}
+

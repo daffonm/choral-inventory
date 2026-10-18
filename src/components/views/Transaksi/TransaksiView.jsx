@@ -19,8 +19,8 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
 
 export default function TransaksiView({ lang: propLang, initialTab = "keluar" }) {
@@ -264,3 +264,5 @@ export default function TransaksiView({ lang: propLang, initialTab = "keluar" })
     </div>
   );
 }
+
+export { TransaksiView };

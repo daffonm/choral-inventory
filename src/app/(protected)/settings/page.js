@@ -1,4 +1,4 @@
-import { SettingsView } from "@/components/views";
+import SettingsView from "@/components/views/Settings/SettingsView";
 
 export const metadata = {
   title: "Pengaturan Sistem | CHORAL.ID Inventory",

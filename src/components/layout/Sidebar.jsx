@@ -455,7 +455,11 @@ export default function Sidebar({
           onClick={handleToggle}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="apple-press p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.06] transition-[background-color,color] focus:outline-none focus-visible:ring-1 focus-visible:ring-accent-yellow shrink-0 ml-auto"
+          className={`apple-press text-white/50 hover:text-white hover:bg-white/[0.06] transition-[background-color,color] focus:outline-none focus-visible:ring-1 focus-visible:ring-accent-yellow shrink-0 ${
+            isCollapsed
+              ? "w-8 h-8 mx-auto flex items-center justify-center rounded-full p-0"
+              : "p-2 rounded-lg ml-auto"
+          }`}
         >
           <Icons.SidebarToggle className="w-4 h-4" />
         </button>
@@ -468,7 +472,7 @@ export default function Sidebar({
             type="button"
             onClick={handleToggle}
             title="Search (⌘ F)"
-            className="apple-press w-full h-10 flex items-center justify-center rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white/50 hover:text-white border border-white/[0.06] transition-[background-color,border-color,color]"
+            className="apple-press w-8 h-8 mx-auto flex items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-white/50 hover:text-white border border-white/[0.06] transition-[background-color,border-color,color]"
           >
             <Icons.Search className="w-4 h-4" />
           </button>
@@ -512,14 +516,24 @@ export default function Sidebar({
                     onMouseLeave={handleMouseLeaveItem}
                     aria-current={isSelected ? "page" : undefined}
                     data-slot="sidebar-nav-item"
-                    className={`sidebar-nav-item apple-press relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs outline-none focus:outline-none focus:ring-0 focus-visible:outline-none group overflow-hidden ${isSelected
-                        ? "neon-selected-glow text-white font-bold"
-                        : "text-white/60 hover:text-white hover:bg-white/[0.04] font-medium"
-                      } ${isCollapsed ? "justify-center px-0 h-10" : "h-10"}`}
+                    className={`sidebar-nav-item apple-press relative flex items-center text-xs outline-none focus:outline-none focus:ring-0 focus-visible:outline-none group overflow-hidden ${
+                      isCollapsed
+                        ? `w-8 h-8 mx-auto justify-center px-0 rounded-full ${
+                            isSelected
+                              ? "neon-selected-glow text-white font-bold"
+                              : "text-white/60 hover:text-white hover:bg-white/[0.04] font-medium"
+                          }`
+                        : `w-full gap-3 px-3 py-2 rounded-xl ${
+                            isSelected
+                              ? "bg-white/[0.08] border border-white/[0.08] text-white font-bold shadow-xs"
+                              : "text-white/60 hover:text-white hover:bg-white/[0.04] font-medium"
+                          }`
+                    }`}
                   >
                     <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${isSelected ? "text-accent-yellow" : "text-white/60 group-hover:text-white"
-                        }`}
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isSelected ? "text-accent-yellow" : "text-white/60 group-hover:text-white"
+                      }`}
                     />
 
                     {!isCollapsed && (
@@ -530,10 +544,11 @@ export default function Sidebar({
 
                     {item.badge && (
                       <span
-                        className={`shrink-0 flex items-center justify-center font-bold text-[10px] text-white rounded-full ${isCollapsed
-                            ? "absolute top-1.5 right-2 w-2 h-2 neon-alert-dot"
-                            : "px-1.5 min-w-4 h-4 neon-alert-dot"
-                          }`}
+                        className={`shrink-0 flex items-center justify-center font-bold text-white rounded-full ${
+                          isCollapsed
+                            ? "absolute top-1 right-1 w-1.5 h-1.5 neon-alert-dot"
+                            : "px-1.5 min-w-4 h-4 text-[10px] neon-alert-dot"
+                        }`}
                       >
                         {!isCollapsed && item.badge}
                       </span>
@@ -559,6 +574,7 @@ export default function Sidebar({
             // 2. Notification is the cumulative total of its sub-items.
             const totalBadge = getCumulativeBadge(item);
             const isOpen = item.isSearching || !!openGroups[item.id];
+            const isAnySubActive = item.subItems?.some(isSubItemActive);
             const tooltipLabel = `${item.label}${totalBadge > 0 ? ` (${totalBadge})` : ""}`;
 
             return (
@@ -579,10 +595,27 @@ export default function Sidebar({
                   onMouseLeave={handleMouseLeaveItem}
                   aria-expanded={isOpen}
                   aria-controls={`sub-menu-${item.id}`}
-                  className={`apple-press relative w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium outline-none focus:outline-none focus:ring-0 focus-visible:ring-1 focus-visible:ring-accent-yellow/40 transition-[background-color,color] text-white/70 hover:text-white hover:bg-white/[0.04] ${isCollapsed ? "justify-center px-0 h-10" : "h-10"
-                    }`}
+                  className={`apple-press relative flex items-center text-xs outline-none focus:outline-none focus:ring-0 focus-visible:ring-1 focus-visible:ring-accent-yellow/40 transition-[background-color,color] ${
+                    isCollapsed
+                      ? `w-8 h-8 mx-auto justify-center px-0 rounded-full ${
+                          isAnySubActive
+                            ? "neon-selected-glow text-white font-bold"
+                            : "text-white/70 hover:text-white hover:bg-white/[0.04] font-medium"
+                        }`
+                      : `w-full gap-3 px-3 py-2 rounded-xl font-medium ${
+                          isAnySubActive
+                            ? "text-white bg-white/[0.04]"
+                            : "text-white/70 hover:text-white hover:bg-white/[0.04]"
+                        }`
+                  }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0 text-white/60 group-hover:text-white transition-colors" />
+                  <Icon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      isAnySubActive
+                        ? "text-accent-yellow"
+                        : "text-white/60 group-hover:text-white"
+                    }`}
+                  />
 
                   {!isCollapsed && (
                     <>
@@ -599,15 +632,16 @@ export default function Sidebar({
 
                       {/* Rotating Chevron Indicator */}
                       <Icons.ChevronDown
-                        className={`w-3.5 h-3.5 text-white/40 shrink-0 transition-transform duration-200 ease-[var(--ease-out)] ${isOpen ? "rotate-180 text-white/80" : "rotate-0"
-                          }`}
+                        className={`w-3.5 h-3.5 text-white/40 shrink-0 transition-transform duration-200 ease-[var(--ease-out)] ${
+                          isOpen ? "rotate-180 text-white/80" : "rotate-0"
+                        }`}
                       />
                     </>
                   )}
 
                   {/* Red dot alert indicator when collapsed */}
                   {isCollapsed && totalBadge > 0 && (
-                    <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full neon-alert-dot" />
+                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full neon-alert-dot" />
                   )}
                 </button>
 
@@ -617,8 +651,9 @@ export default function Sidebar({
                     id={`sub-menu-${item.id}`}
                     role="region"
                     aria-label={item.label}
-                    className={`grid transition-[grid-template-rows,opacity] duration-200 ease-[var(--ease-out)] ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                      }`}
+                    className={`grid transition-[grid-template-rows,opacity] duration-200 ease-[var(--ease-out)] ${
+                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
                   >
                     <div className="overflow-hidden space-y-0.5 pt-1 pl-3">
                       {item.subItems.map((sub) => {
@@ -631,12 +666,13 @@ export default function Sidebar({
                             onClick={() => handleSelect(sub.id)}
                             aria-current={isSubSelected ? "page" : undefined}
                             data-slot="sidebar-sub-item"
-                            className={`apple-press relative w-full flex items-center pl-7 pr-2.5 py-2 rounded-xl text-xs outline-none focus:outline-none transition-[background-color,color] group ${isSubSelected
-                                ? "neon-selected-glow text-white font-bold"
+                            className={`apple-press relative w-full flex items-center pl-7 pr-2.5 py-2 rounded-xl text-xs outline-none focus:outline-none transition-[background-color,color] group ${
+                              isSubSelected
+                                ? "bg-white/[0.08] border border-white/[0.08] text-white font-bold shadow-xs"
                                 : "text-white/60 hover:text-white hover:bg-white/[0.04] font-medium"
-                              }`}
+                            }`}
                           >
-                            <span className="truncate flex-1 text-left tracking-[-0.01em]">
+                            <span className={`truncate flex-1 text-left tracking-[-0.01em] ${isSubSelected ? "text-accent-yellow" : ""}`}>
                               {sub.label}
                             </span>
 
@@ -696,10 +732,19 @@ export default function Sidebar({
                     onMouseLeave={handleMouseLeaveItem}
                     aria-current={isSelected ? "page" : undefined}
                     data-slot="sidebar-nav-secondary-item"
-                    className={`sidebar-nav-item apple-press relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium outline-none focus:outline-none focus:ring-0 focus-visible:outline-none group overflow-hidden ${isSelected
-                        ? "neon-selected-glow text-white font-bold"
-                        : "text-white/55 hover:text-white hover:bg-white/[0.04]"
-                      } ${isCollapsed ? "justify-center px-0 h-10" : "h-10"}`}
+                    className={`sidebar-nav-item apple-press relative flex items-center text-xs outline-none focus:outline-none focus:ring-0 focus-visible:outline-none group overflow-hidden ${
+                      isCollapsed
+                        ? `w-8 h-8 mx-auto justify-center px-0 rounded-full ${
+                            isSelected
+                              ? "neon-selected-glow text-white font-bold"
+                              : "text-white/55 hover:text-white hover:bg-white/[0.04] font-medium"
+                          }`
+                        : `w-full gap-3 px-3 py-2 rounded-xl font-medium ${
+                            isSelected
+                              ? "bg-white/[0.08] border border-white/[0.08] text-white font-bold shadow-xs"
+                              : "text-white/55 hover:text-white hover:bg-white/[0.04]"
+                          }`
+                    }`}
                   >
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${isSelected ? "text-accent-yellow" : "text-white/55 group-hover:text-white"
@@ -733,12 +778,19 @@ export default function Sidebar({
       <div className="p-3 space-y-2 border-t border-white/[0.06]">
         {/* User Profile Card */}
         <div
-          className={`apple-press apple-card-glass flex items-center rounded-[16px] p-2 transition-[background-color] hover:bg-white/[0.07] ${isCollapsed ? "justify-center" : "justify-between"
-            }`}
+          className={`apple-press apple-card-glass flex items-center transition-[background-color] hover:bg-white/[0.07] ${
+            isCollapsed
+              ? "w-8 h-8 mx-auto justify-center p-0 rounded-full"
+              : "rounded-[16px] p-2 justify-between"
+          }`}
         >
           <div className="flex items-center gap-2.5 overflow-hidden">
-            {/* User Avatar with concentric R=8px */}
-            <div className="relative w-8 h-8 rounded-[8px] bg-punch-black border border-white/[0.15] overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-white">
+            {/* User Avatar with concentric R=8px or circular when collapsed */}
+            <div
+              className={`relative bg-punch-black border border-white/[0.15] overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-white ${
+                isCollapsed ? "w-8 h-8 rounded-full" : "w-8 h-8 rounded-[8px]"
+              }`}
+            >
               <div className="w-full h-full bg-gradient-to-tr from-accent-yellow/30 to-zinc-700 flex items-center justify-center text-[11px] font-bold text-accent-yellow font-mono">
                 {user?.email ? user.email.slice(0, 2).toUpperCase() : "CH"}
               </div>

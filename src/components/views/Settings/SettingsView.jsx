@@ -19,8 +19,8 @@ import {
   TableHead,
   TableCell,
   Icons,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { seedInventoryFromDummy } from "@/lib/services/inventory-service";
 
 export default function SettingsView({
@@ -416,3 +416,5 @@ export default function SettingsView({
     </div>
   );
 }
+
+export { SettingsView };

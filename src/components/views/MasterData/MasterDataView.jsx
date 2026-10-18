@@ -21,16 +21,19 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
-import { formatNumber } from "@/lib/utils/utils";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
+import { formatNumber, cn } from "@/lib/utils/utils";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
+import TambahProdukView from "./TambahProdukView";
 
 export default function MasterDataView({ lang: propLang }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
   const [activeTab, setActiveTab] = useState("produk");
   const [searchFilter, setSearchFilter] = useState("");
+  const [viewMode, setViewMode] = useState("list"); // "list" | "create_produk"
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // Integrasi realtime Firestore (tanpa fallback dummy data)
   const { data: produk, loading: loadingProduk } = useRealtimeCollection("master_products", {
@@ -53,8 +56,20 @@ export default function MasterDataView({ lang: propLang }) {
     { value: "channel", label: lang === "id" ? "Channel Distribusi" : "Channels", icon: Icons.ChannelGlobe },
   ];
 
+  if (viewMode === "create_produk") {
+    return (
+      <TambahProdukView
+        onBack={() => setViewMode("list")}
+        onSuccess={() => {
+          // Success callback
+        }}
+        lang={lang}
+      />
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className={cn("flex flex-col gap-6 w-full", hasNavigated && "animate-view-slide-in-left")}>
       {/* 1. Module Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
@@ -77,7 +92,17 @@ export default function MasterDataView({ lang: propLang }) {
           <Button variant="secondary" size="sm" icon={Icons.Download}>
             {lang === "id" ? "Import Excel" : "Import Excel"}
           </Button>
-          <Button variant="primary" size="sm" icon={Icons.Plus}>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Icons.Plus}
+            onClick={() => {
+              if (activeTab === "produk") {
+                setHasNavigated(true);
+                setViewMode("create_produk");
+              }
+            }}
+          >
             {lang === "id" ? `Tambah ${activeTab.toUpperCase()}` : `Add ${activeTab.toUpperCase()}`}
           </Button>
         </div>
@@ -127,6 +152,19 @@ export default function MasterDataView({ lang: propLang }) {
                   icon={Icons.ProductBag}
                   title="Belum Ada Master Produk"
                   description="Koleksi master_products di Firestore masih kosong. Tambahkan produk baru atau jalankan seeder manual."
+                  action={
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={Icons.Plus}
+                      onClick={() => {
+                        setHasNavigated(true);
+                        setViewMode("create_produk");
+                      }}
+                    >
+                      {lang === "id" ? "Tambah Produk Baru" : "Add New Product"}
+                    </Button>
+                  }
                 />
               ) : (
                 <Table>
@@ -154,8 +192,22 @@ export default function MasterDataView({ lang: propLang }) {
                           <TableCell className="font-mono font-bold text-black-primary">
                             {item.sku}
                           </TableCell>
-                          <TableCell className="font-semibold text-black-primary">
-                            {item.namaProduk}
+                          <TableCell>
+                            <div className="flex items-center gap-2.5">
+                              {item.fotoUrl ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                  src={item.fotoUrl}
+                                  alt={item.namaProduk}
+                                  className="size-8 rounded-md object-cover border border-border-default shrink-0 shadow-2xs"
+                                />
+                              ) : (
+                                <div className="size-8 rounded-md bg-surface-muted border border-border-subtle flex items-center justify-center text-text-muted shrink-0 text-xs">
+                                  <Icons.ProductBag className="size-4 text-text-muted" />
+                                </div>
+                              )}
+                              <span className="font-semibold text-black-primary">{item.namaProduk}</span>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Badge variant="neutral" size="sm">{item.kategori || "-"}</Badge>
@@ -445,3 +497,5 @@ export default function MasterDataView({ lang: propLang }) {
     </div>
   );
 }
+
+export { MasterDataView };

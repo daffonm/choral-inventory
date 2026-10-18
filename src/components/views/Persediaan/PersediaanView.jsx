@@ -19,8 +19,8 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { formatNumber } from "@/lib/utils/utils";
 import { useRealtimeInventory } from "@/lib/hooks/useRealtimeInventory";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
@@ -464,3 +464,5 @@ export default function PersediaanView({ lang: propLang, initialTab = "stokSaatI
     </div>
   );
 }
+
+export { PersediaanView };

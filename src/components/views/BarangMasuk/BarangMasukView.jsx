@@ -19,8 +19,8 @@ import {
   Icons,
   SkeletonTable,
   EmptyState,
-} from "../ui";
-import { useAppConfig } from "../../providers/AppProvider";
+} from "@/components/ui";
+import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
 
 export default function BarangMasukView({ lang: propLang, initialTab = "supplier" }) {
@@ -280,3 +280,5 @@ export default function BarangMasukView({ lang: propLang, initialTab = "supplier
     </div>
   );
 }
+
+export { BarangMasukView };

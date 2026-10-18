@@ -1,4 +1,4 @@
-import { TransaksiView } from "@/components/views";
+import TransaksiView from "@/components/views/Transaksi/TransaksiView";
 
 export const metadata = {
   title: "Riwayat Transaksi | CHORAL.ID Transactions",

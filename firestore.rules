@@ -7,10 +7,17 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // 1. Koleksi Inventaris & Persediaan
+    // 1. Koleksi Inventaris & Persediaan (Anti-Overselling Guard)
     match /inventory/{itemId} {
       allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.availableStock >= 0
+        && request.resource.data.totalStock >= 0;
+      allow update: if isAuthenticated()
+        && request.resource.data.availableStock >= 0
+        && request.resource.data.totalStock >= 0
+        && request.resource.data.reservedStock >= 0;
+      allow delete: if isAuthenticated();
     }
 
     // 2. Koleksi Mutasi & Pergerakan Stok (Audit Trail)

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui";
 import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
+import CatatPengeluaranModal from "./CatatPengeluaranModal";
 
 export default function TransaksiView({ lang: propLang, initialTab = "keluar" }) {
   const { lang: contextLang } = useAppConfig();
@@ -29,10 +30,12 @@ export default function TransaksiView({ lang: propLang, initialTab = "keluar" })
   const [userTab, setUserTab] = useState(null);
   const activeTab = userTab || initialTab;
   const setActiveTab = setUserTab;
+  const [isCatatModalOpen, setIsCatatModalOpen] = useState(false);
 
   // Realtime Firestore subscription
   const { data: transactions, loading: loadingTx, isLive } = useRealtimeCollection("transactions");
   const { data: movements, loading: loadingMovements } = useRealtimeCollection("stock_movements");
+  const { data: inventoryItems } = useRealtimeCollection("inventory");
 
   const barangKeluar = React.useMemo(() => {
     return transactions.filter(
@@ -82,7 +85,12 @@ export default function TransaksiView({ lang: propLang, initialTab = "keluar" })
           <Button variant="secondary" size="sm" icon={Icons.Download}>
             {lang === "id" ? "Ekspor Buku Kas/Stok" : "Export Ledger"}
           </Button>
-          <Button variant="primary" size="sm" icon={Icons.Plus}>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Icons.Plus}
+            onClick={() => setIsCatatModalOpen(true)}
+          >
             {lang === "id" ? "Catat Pengeluaran" : "New Goods Issue"}
           </Button>
         </div>
@@ -261,6 +269,14 @@ export default function TransaksiView({ lang: propLang, initialTab = "keluar" })
           </Card>
         )
       )}
+
+      {/* Modal Catat Pengeluaran dengan Atomic Guard */}
+      <CatatPengeluaranModal
+        isOpen={isCatatModalOpen}
+        onClose={() => setIsCatatModalOpen(false)}
+        inventoryItems={inventoryItems || []}
+        lang={lang}
+      />
     </div>
   );
 }

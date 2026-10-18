@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Card,
   CardHeader,
@@ -26,13 +26,17 @@ import { useAppConfig } from "@/providers/AppProvider";
 import { formatNumber, cn } from "@/lib/utils/utils";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
 import TambahProdukView from "./TambahProdukView";
+import TambahMaterialView from "./TambahMaterialView";
+import TambahSupplierView from "./TambahSupplierView";
+import TambahGudangView from "./TambahGudangView";
+import TambahChannelView from "./TambahChannelView";
 
 export default function MasterDataView({ lang: propLang }) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
   const [activeTab, setActiveTab] = useState("produk");
   const [searchFilter, setSearchFilter] = useState("");
-  const [viewMode, setViewMode] = useState("list"); // "list" | "create_produk"
+  const [viewMode, setViewMode] = useState("list"); // "list" | "create_produk" | "create_material" | "create_supplier" | "create_gudang" | "create_channel"
   const [hasNavigated, setHasNavigated] = useState(false);
 
   // Integrasi realtime Firestore (tanpa fallback dummy data)
@@ -56,13 +60,73 @@ export default function MasterDataView({ lang: propLang }) {
     { value: "channel", label: lang === "id" ? "Channel Distribusi" : "Channels", icon: Icons.ChannelGlobe },
   ];
 
+  // Set real-time SKU & Kode terdaftar untuk validasi duplikasi instan O(1) tanpa biaya read tambahan
+  const existingSkus = useMemo(() => {
+    return new Set((produk || []).map((p) => String(p.sku || "").trim().toUpperCase()));
+  }, [produk]);
+
+  const existingMaterialCodes = useMemo(() => {
+    return new Set((material || []).map((m) => String(m.kodeMaterial || "").trim().toUpperCase()));
+  }, [material]);
+
+  const existingSupplierCodes = useMemo(() => {
+    return new Set((supplier || []).map((s) => String(s.kodeSupplier || "").trim().toUpperCase()));
+  }, [supplier]);
+
+  const existingWarehouseCodes = useMemo(() => {
+    return new Set((gudang || []).map((g) => String(g.kodeGudang || "").trim().toUpperCase()));
+  }, [gudang]);
+
+  const existingChannelCodes = useMemo(() => {
+    return new Set((channel || []).map((c) => String(c.channelId || c.kodeChannel || "").trim().toUpperCase()));
+  }, [channel]);
+
   if (viewMode === "create_produk") {
     return (
       <TambahProdukView
         onBack={() => setViewMode("list")}
-        onSuccess={() => {
-          // Success callback
-        }}
+        existingSkus={existingSkus}
+        lang={lang}
+      />
+    );
+  }
+
+  if (viewMode === "create_material") {
+    return (
+      <TambahMaterialView
+        onBack={() => setViewMode("list")}
+        existingCodes={existingMaterialCodes}
+        suppliers={supplier || []}
+        lang={lang}
+      />
+    );
+  }
+
+  if (viewMode === "create_supplier") {
+    return (
+      <TambahSupplierView
+        onBack={() => setViewMode("list")}
+        existingCodes={existingSupplierCodes}
+        lang={lang}
+      />
+    );
+  }
+
+  if (viewMode === "create_gudang") {
+    return (
+      <TambahGudangView
+        onBack={() => setViewMode("list")}
+        existingCodes={existingWarehouseCodes}
+        lang={lang}
+      />
+    );
+  }
+
+  if (viewMode === "create_channel") {
+    return (
+      <TambahChannelView
+        onBack={() => setViewMode("list")}
+        existingCodes={existingChannelCodes}
         lang={lang}
       />
     );
@@ -97,10 +161,12 @@ export default function MasterDataView({ lang: propLang }) {
             size="sm"
             icon={Icons.Plus}
             onClick={() => {
-              if (activeTab === "produk") {
-                setHasNavigated(true);
-                setViewMode("create_produk");
-              }
+              setHasNavigated(true);
+              if (activeTab === "produk") setViewMode("create_produk");
+              else if (activeTab === "material") setViewMode("create_material");
+              else if (activeTab === "supplier") setViewMode("create_supplier");
+              else if (activeTab === "gudang") setViewMode("create_gudang");
+              else if (activeTab === "channel") setViewMode("create_channel");
             }}
           >
             {lang === "id" ? `Tambah ${activeTab.toUpperCase()}` : `Add ${activeTab.toUpperCase()}`}
@@ -259,6 +325,19 @@ export default function MasterDataView({ lang: propLang }) {
                   icon={Icons.MaterialFabric}
                   title="Belum Ada Master Material"
                   description="Koleksi master_materials di Firestore masih kosong. Tambahkan material bahan baku untuk memulai produksi."
+                  action={
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={Icons.Plus}
+                      onClick={() => {
+                        setHasNavigated(true);
+                        setViewMode("create_material");
+                      }}
+                    >
+                      {lang === "id" ? "Tambah Material Baru" : "Add New Material"}
+                    </Button>
+                  }
                 />
               ) : (
                 <Table>
@@ -327,6 +406,19 @@ export default function MasterDataView({ lang: propLang }) {
                   icon={Icons.SupplierTruck}
                   title="Belum Ada Data Supplier"
                   description="Koleksi master_suppliers di Firestore masih kosong. Daftarkan mitra vendor bahan baku."
+                  action={
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={Icons.Plus}
+                      onClick={() => {
+                        setHasNavigated(true);
+                        setViewMode("create_supplier");
+                      }}
+                    >
+                      {lang === "id" ? "Daftarkan Supplier Baru" : "Register New Supplier"}
+                    </Button>
+                  }
                 />
               ) : (
                 <Table>
@@ -384,6 +476,19 @@ export default function MasterDataView({ lang: propLang }) {
                 icon={Icons.Warehouse}
                 title="Belum Ada Data Fasilitas Gudang"
                 description="Koleksi master_warehouses di Firestore masih kosong. Daftarkan gudang dan denah rack penyimpanan."
+                action={
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    icon={Icons.Plus}
+                    onClick={() => {
+                      setHasNavigated(true);
+                      setViewMode("create_gudang");
+                    }}
+                  >
+                    {lang === "id" ? "Tambah Fasilitas Gudang" : "Add Warehouse Facility"}
+                  </Button>
+                }
               />
             </CardContent>
           </Card>
@@ -451,6 +556,19 @@ export default function MasterDataView({ lang: propLang }) {
                   icon={Icons.ChannelGlobe}
                   title="Belum Ada Data Channel Distribusi"
                   description="Koleksi master_channels di Firestore masih kosong. Daftarkan kanal penjualan online dan offline."
+                  action={
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={Icons.Plus}
+                      onClick={() => {
+                        setHasNavigated(true);
+                        setViewMode("create_channel");
+                      }}
+                    >
+                      {lang === "id" ? "Daftarkan Channel Baru" : "Register New Channel"}
+                    </Button>
+                  }
                 />
               ) : (
                 <Table>
@@ -460,7 +578,7 @@ export default function MasterDataView({ lang: propLang }) {
                       <TableHead>Nama Channel</TableHead>
                       <TableHead>Tipe Saluran</TableHead>
                       <TableHead>Biaya / Komisi</TableHead>
-                      <TableHead>Alokasi Stok Fisik</TableHead>
+                      <TableHead>Siklus Settlement</TableHead>
                       <TableHead>Penanggung Jawab (PIC)</TableHead>
                       <TableHead className="text-right">Status</TableHead>
                     </TableRow>
@@ -478,8 +596,8 @@ export default function MasterDataView({ lang: propLang }) {
                           <Badge variant="neutral" size="sm">{item.tipe || "Direct"}</Badge>
                         </TableCell>
                         <TableCell className="font-mono">{item.komisi || "0%"}</TableCell>
-                        <TableCell className="font-mono font-bold text-black-primary">
-                          {formatNumber(item.stokDialokasikan || 0)} pcs
+                        <TableCell className="text-xs text-text-secondary">
+                          {item.settlement || "H+1 Otomatis"}
                         </TableCell>
                         <TableCell className="text-text-secondary">{item.pic || "-"}</TableCell>
                         <TableCell className="text-right">

@@ -43,7 +43,12 @@ const WARNA_OPTIONS = [
   { label: "Multicam Camo", value: "Multicam Camo", hex: "#3F3B2E" },
 ];
 
-export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) {
+export default function TambahProdukView({
+  onBack,
+  onSuccess,
+  existingSkus = new Set(),
+  lang: propLang,
+}) {
   const { lang: contextLang } = useAppConfig();
   const lang = propLang || contextLang || "id";
 
@@ -73,6 +78,11 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
     fotoUrl: "",
     status: "Aktif",
   });
+
+  // Real-time In-Memory Duplicate Check (0 Firebase Read, O(1) Instant Lookup)
+  const cleanSku = String(formData.sku || "").trim().toUpperCase();
+  const isDuplicateSku = Boolean(cleanSku && existingSkus.has(cleanSku));
+  const isSkuValid = Boolean(cleanSku && !isDuplicateSku && cleanSku.length >= 3);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -135,6 +145,10 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
 
     if (!formData.sku.trim()) {
       setErrorMessage("Kode SKU wajib diisi atau klik tombol 'Auto SKU'.");
+      return;
+    }
+    if (isDuplicateSku) {
+      setErrorMessage(`SKU ${cleanSku} sudah terdaftar di database. Gunakan kode SKU lain.`);
       return;
     }
     if (!formData.namaProduk.trim()) {
@@ -238,7 +252,7 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
             size="sm"
             icon={loading ? Icons.Loader : Icons.Check}
             onClick={handleSubmit}
-            disabled={loading || successSaved}
+            disabled={loading || isDuplicateSku || successSaved}
             className={cn("min-w-[130px]", loading && "animate-pulse")}
           >
             {loading
@@ -315,9 +329,21 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
               {/* SKU & Auto Generator */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-black-primary">
-                    SKU / Kode Produk <span className="text-accent-red">*</span>
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-bold text-black-primary">
+                      SKU / Kode Produk <span className="text-accent-red">*</span>
+                    </label>
+                    {isDuplicateSku && (
+                      <Badge variant="red" size="sm" dot className="animate-in fade-in duration-150">
+                        {lang === "id" ? "Sudah Terdaftar" : "Already Registered"}
+                      </Badge>
+                    )}
+                    {isSkuValid && (
+                      <Badge variant="yellow" size="sm" dot className="animate-in fade-in duration-150">
+                        {lang === "id" ? "Tersedia" : "Available"}
+                      </Badge>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={handleAutoGenerateSku}
@@ -332,11 +358,28 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
                   value={formData.sku}
                   onChange={(e) => handleChange("sku", e.target.value.toUpperCase())}
                   icon={Icons.Barcode}
-                  className="font-mono uppercase font-bold"
+                  className={cn(
+                    "font-mono uppercase font-bold transition-all duration-150",
+                    isDuplicateSku && "border-accent-red focus:border-accent-red text-accent-red bg-accent-red-surface/30",
+                    isSkuValid && "border-accent-yellow/80 focus:border-accent-yellow"
+                  )}
                 />
-                <span className="text-[10px] text-text-muted">
-                  Gunakan format singkatan standar (Brand-Kategori-Model-Warna).
-                </span>
+                <div className="flex items-center justify-between text-[10px]">
+                  <span
+                    className={cn(
+                      isDuplicateSku ? "text-accent-red font-semibold" : "text-text-muted"
+                    )}
+                  >
+                    {isDuplicateSku
+                      ? (lang === "id"
+                          ? "SKU ini telah terdaftar di database live. Gunakan kode SKU lain."
+                          : "This SKU is already taken in the live database.")
+                      : "Gunakan format singkatan standar (Brand-Kategori-Model-Warna)."}
+                  </span>
+                  <span className="text-text-muted font-mono">
+                    {existingSkus.size} SKU Terdaftar (Live)
+                  </span>
+                </div>
               </div>
 
               {/* Nama Produk */}
@@ -353,59 +396,93 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
               </div>
 
               {/* Barcode & Kategori Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-black-primary">Kategori Produk</label>
-                  <select
-                    value={formData.kategori}
-                    onChange={(e) => handleChange("kategori", e.target.value)}
-                    className="h-10 px-3 text-xs font-medium text-black-primary bg-surface-muted border border-border-default rounded-[10px] focus:outline-none focus:border-accent-yellow/70 transition-colors"
-                  >
-                    {KATEGORI_OPTIONS.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-black-primary">Kategori Produk <span className="text-accent-red">*</span></label>
+                  <span className="text-[10px] text-text-muted">Pilih lini tas / item</span>
                 </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-black-primary">Barcode / EAN-13</label>
-                  <Input
-                    placeholder="899..."
-                    value={formData.barcode}
-                    onChange={(e) => handleChange("barcode", e.target.value)}
-                    className="font-mono"
-                  />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                  {KATEGORI_OPTIONS.map((cat) => {
+                    const isSelected = formData.kategori === cat;
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => handleChange("kategori", cat)}
+                        className={cn(
+                          "px-2.5 py-2 rounded-xl border text-xs font-medium text-center transition-all",
+                          isSelected
+                            ? "bg-accent-yellow/20 border-accent-yellow text-black-primary font-bold shadow-sm ring-1 ring-accent-yellow/30"
+                            : "bg-surface-muted/40 border-border-default text-text-secondary hover:bg-surface-muted hover:border-border-hover"
+                        )}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Jenis Barang & Satuan */}
+              {/* Barcode EAN-13 */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-black-primary">Barcode / EAN-13</label>
+                <Input
+                  placeholder="899..."
+                  value={formData.barcode}
+                  onChange={(e) => handleChange("barcode", e.target.value)}
+                  className="font-mono"
+                  icon={Icons.Barcode}
+                />
+              </div>
+
+              {/* Jenis Barang & Satuan Button Rows */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-black-primary">Jenis Barang</label>
-                  <select
-                    value={formData.jenisBarang}
-                    onChange={(e) => handleChange("jenisBarang", e.target.value)}
-                    className="h-10 px-3 text-xs font-medium text-black-primary bg-surface-muted border border-border-default rounded-[10px] focus:outline-none focus:border-accent-yellow/70 transition-colors"
-                  >
-                    <option value="Produk Jadi">Produk Jadi (Finished Good)</option>
-                    <option value="Semi-Finished">Semi-Finished (Half-Goods)</option>
-                    <option value="Merchandise">Merchandise & Promo</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["Produk Jadi", "Semi-Finished", "Merchandise"].map((jb) => {
+                      const isSelected = formData.jenisBarang === jb;
+                      return (
+                        <button
+                          key={jb}
+                          type="button"
+                          onClick={() => handleChange("jenisBarang", jb)}
+                          className={cn(
+                            "px-2 py-2 rounded-xl border text-[11px] font-medium text-center transition-all",
+                            isSelected
+                              ? "bg-accent-yellow/20 border-accent-yellow text-black-primary font-bold shadow-sm ring-1 ring-accent-yellow/30"
+                              : "bg-surface-muted/40 border-border-default text-text-secondary hover:bg-surface-muted"
+                          )}
+                        >
+                          {jb.split(" ")[0]}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-black-primary">Satuan Unit</label>
-                  <select
-                    value={formData.satuan}
-                    onChange={(e) => handleChange("satuan", e.target.value)}
-                    className="h-10 px-3 text-xs font-medium text-black-primary bg-surface-muted border border-border-default rounded-[10px] focus:outline-none focus:border-accent-yellow/70 transition-colors"
-                  >
-                    <option value="Pcs">Pcs (Satuan)</option>
-                    <option value="Set">Set / Bundle</option>
-                    <option value="Lusin">Lusin (12 Pcs)</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["Pcs", "Set", "Lusin"].map((st) => {
+                      const isSelected = formData.satuan === st;
+                      return (
+                        <button
+                          key={st}
+                          type="button"
+                          onClick={() => handleChange("satuan", st)}
+                          className={cn(
+                            "px-2 py-2 rounded-xl border text-xs font-mono font-bold text-center transition-all",
+                            isSelected
+                              ? "bg-accent-yellow border-accent-yellow text-black-primary shadow-sm ring-1 ring-accent-yellow/30"
+                              : "bg-surface-muted/40 border-border-default text-text-secondary hover:bg-surface-muted"
+                          )}
+                        >
+                          {st}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -781,7 +858,7 @@ export default function TambahProdukView({ onBack, onSuccess, lang: propLang }) 
                 size="sm"
                 icon={loading ? Icons.Loader : Icons.Check}
                 onClick={handleSubmit}
-                disabled={loading || successSaved}
+                disabled={loading || isDuplicateSku || successSaved}
               >
                 {loading ? "Menyimpan..." : "Simpan Produk"}
               </Button>

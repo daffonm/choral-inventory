@@ -22,6 +22,10 @@ import {
 } from "@/components/ui";
 import { useAppConfig } from "@/providers/AppProvider";
 import { useRealtimeCollection } from "@/lib/hooks/useRealtimeCollection";
+import { fulfillOrderAtomic, cancelOrderAtomic } from "@/lib/services/inventory-service";
+import { cn } from "@/lib/utils/utils";
+import BuatOrderModal from "./BuatOrderModal";
+import SimulasiRaceConditionModal from "./SimulasiRaceConditionModal";
 
 export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
   const { lang: contextLang } = useAppConfig();
@@ -30,8 +34,49 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
   const activeTab = userTab || initialTab;
   const setActiveTab = setUserTab;
 
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isSimulasiModalOpen, setIsSimulasiModalOpen] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [actionAlert, setActionAlert] = useState(null);
+
   // Realtime Firestore subscription
   const { data: allOrders, loading, isLive } = useRealtimeCollection("orders");
+  const { data: inventoryItems } = useRealtimeCollection("inventory");
+
+  const handleFulfill = async (orderId) => {
+    setActionLoadingId(orderId);
+    setActionAlert(null);
+    try {
+      const res = await fulfillOrderAtomic(orderId);
+      if (res.success) {
+        setActionAlert({ type: "success", message: `Pesanan #${orderId} berhasil dikirim! Fisik barang telah keluar gudang.` });
+      } else {
+        setActionAlert({ type: "error", message: res.error || "Gagal memproses pengiriman." });
+      }
+    } catch (err) {
+      setActionAlert({ type: "error", message: err.message });
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm(`Batalkan pesanan #${orderId} dan kembalikan alokasi stok ke inventaris aktif?`)) return;
+    setActionLoadingId(orderId);
+    setActionAlert(null);
+    try {
+      const res = await cancelOrderAtomic(orderId, "Dibatalkan manual oleh staf gudang");
+      if (res.success) {
+        setActionAlert({ type: "success", message: `Pesanan #${orderId} dibatalkan! Stok berhasil dikembalikan secara aman.` });
+      } else {
+        setActionAlert({ type: "error", message: res.error || "Gagal membatalkan pesanan." });
+      }
+    } catch (err) {
+      setActionAlert({ type: "error", message: err.message });
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   const daftarPesanan = React.useMemo(() => {
     return allOrders.filter(
@@ -90,20 +135,62 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" size="sm" icon={Icons.Download}>
             {lang === "id" ? "Print Label Thermal" : "Bulk Print Labels"}
           </Button>
-          <Button variant="primary" size="sm" icon={Icons.Plus}>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={Icons.Zap}
+            onClick={() => setIsSimulasiModalOpen(true)}
+            className="border-accent-yellow/50 text-accent-yellow-hover hover:border-accent-yellow"
+          >
+            {lang === "id" ? "Simulasi Race Condition ⚡" : "Concurrency Lab ⚡"}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Icons.Plus}
+            onClick={() => setIsOrderModalOpen(true)}
+          >
             {lang === "id" ? "Buat Order Manual" : "Manual Order"}
           </Button>
         </div>
       </div>
 
+      {/* Action Notification Alert */}
+      {actionAlert && (
+        <div
+          className={cn(
+            "p-3.5 rounded-xl border flex items-center justify-between text-xs animate-fade-in",
+            actionAlert.type === "success"
+              ? "bg-accent-yellow/15 border-accent-yellow/40 text-black-primary font-medium"
+              : "bg-accent-red/10 border-accent-red/30 text-accent-red font-medium"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            {actionAlert.type === "success" ? (
+              <Icons.CheckCircle className="h-4 w-4 text-accent-yellow-hover shrink-0" />
+            ) : (
+              <Icons.AlertTriangle className="h-4 w-4 text-accent-red shrink-0" />
+            )}
+            <span>{actionAlert.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActionAlert(null)}
+            className="p-1 text-text-muted hover:text-black-primary transition-colors"
+          >
+            <Icons.Close className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* TAB 1: DAFTAR PESANAN */}
       {activeTab === "daftar" && (
         loading ? (
-          <SkeletonTable rows={5} columns={8} />
+          <SkeletonTable rows={5} columns={9} />
         ) : (
           <Card>
             <CardHeader>
@@ -111,8 +198,8 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
                 <CardTitle>{lang === "id" ? "Daftar Pesanan Aktif" : "Active Orders Queue"}</CardTitle>
                 <CardDescription>
                   {lang === "id"
-                    ? "Atribut: Order ID, marketplace, channel, SKU, quantity, status"
-                    : "Attributes: Order ID, marketplace, channel, SKU, quantity, status"}
+                    ? "Atribut: Order ID, marketplace, channel, SKU, quantity, status, dan aksi fulfillment"
+                    : "Attributes: Order ID, marketplace, channel, SKU, quantity, status, and fulfillment actions"}
                 </CardDescription>
               </div>
               <Badge variant="yellow" size="sm">{daftarPesanan.length} Pesanan Diproses</Badge>
@@ -135,7 +222,8 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
                       <TableHead>Quantity</TableHead>
                       <TableHead>Customer &amp; Kurir</TableHead>
                       <TableHead>Waktu Pesan</TableHead>
-                      <TableHead className="text-right">Status Fulfillment</TableHead>
+                      <TableHead>Status Fulfillment</TableHead>
+                      <TableHead className="text-right">Aksi Alur</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -163,10 +251,10 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
                         <TableCell className="font-mono text-[11px] text-text-secondary">
                           {item.waktuPesan || "-"}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell>
                           <Badge
                             variant={
-                              (item.status || "").includes("Waiting") || (item.status || "").includes("Picking") || (item.status || "").includes("Packing")
+                              (item.status || "").includes("Waiting") || (item.status || "").includes("Picking") || (item.status || "").includes("Packing") || (item.status || "").includes("Reserved") || (item.status || "").includes("Diproses")
                                 ? "yellow"
                                 : "neutral"
                             }
@@ -175,6 +263,29 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
                           >
                             {item.status || "Pending"}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="secondary"
+                              size="xs"
+                              disabled={actionLoadingId === (item.orderId || item.id)}
+                              onClick={() => handleFulfill(item.orderId || item.id)}
+                              title="Kirim Pesanan (Fisik Keluar Gudang)"
+                            >
+                              {actionLoadingId === (item.orderId || item.id) ? "..." : "Kirim"}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="xs"
+                              disabled={actionLoadingId === (item.orderId || item.id)}
+                              onClick={() => handleCancel(item.orderId || item.id)}
+                              className="text-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+                              title="Batalkan Pesanan & Kembalikan Alokasi Stok"
+                            >
+                              Batal
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -310,6 +421,22 @@ export default function PesananView({ lang: propLang, initialTab = "daftar" }) {
           </Card>
         )
       )}
+
+      {/* Modal Buat Order Manual (Tahap 1: Booking Stok) */}
+      <BuatOrderModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        inventoryItems={inventoryItems || []}
+        lang={lang}
+      />
+
+      {/* Modal Concurrency Lab (Simulasi Race Condition) */}
+      <SimulasiRaceConditionModal
+        isOpen={isSimulasiModalOpen}
+        onClose={() => setIsSimulasiModalOpen(false)}
+        inventoryItems={inventoryItems || []}
+        lang={lang}
+      />
     </div>
   );
 }
